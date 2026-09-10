@@ -3,10 +3,8 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Product } from '../../products/entities';
 
 @Entity('users')
 export class User {
@@ -39,8 +37,8 @@ export class User {
 
   // un usuario puede tener o crear muchos productos
 
-  @OneToMany(() => Product, (product) => product.user)
-  product: Product[];
+  // @OneToMany(() => Product, (product) => product.user)
+  // product: Product[];
 
   @BeforeInsert()
   checkFieldsBeforeInsert() {

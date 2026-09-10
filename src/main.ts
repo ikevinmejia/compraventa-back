@@ -12,6 +12,10 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
+      transform: true, // <-- AÑADE ESTA LÍNEA
+      transformOptions: {
+        enableImplicitConversion: true, // <-- Permite convertir tipos implícitamente (ej: "123" -> 123)
+      },
     }),
   );
 
