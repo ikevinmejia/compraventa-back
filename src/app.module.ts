@@ -9,6 +9,7 @@ import { ModelsModule } from './models/models.module';
 import { EngineTypesModule } from './engine-types/engine-types.module';
 import { InventoryStatesModule } from './inventory-states/inventory-states.module';
 import { TransmissionsModule } from './transmissions/transmissions.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -40,6 +41,8 @@ import { TransmissionsModule } from './transmissions/transmissions.module';
     InventoryStatesModule,
 
     TransmissionsModule,
+
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

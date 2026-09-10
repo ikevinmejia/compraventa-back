@@ -1,0 +1,280 @@
+interface seed {
+  engineTypes: string[];
+  transmissions: string[];
+  inventoryStates: string[];
+  brands: {
+    name: string;
+    models: string[];
+  }[];
+}
+
+export const initialData: seed = {
+  engineTypes: ['GASOLINA', 'DIESEL', 'HIBRIDO', 'ELECTRICO'],
+  inventoryStates: [
+    'EN PERITAJE',
+    'ALISTAMIENTO',
+    'DISPONIBLE',
+    'SEPARADO',
+    'VENDIDO',
+  ],
+  transmissions: ['MECANICA', 'AUTOMATICA', 'NA'],
+
+  brands: [
+    {
+      name: 'Renault',
+      models: [
+        'Kwid',
+        'Logan',
+        'Stepway',
+        'Duster 1.6',
+        'Duster 1.3 Turbo',
+        'Oroch 1.3 Turbo',
+        'Master',
+        'Kardian',
+        'Megane E-Tech',
+      ],
+    },
+    {
+      name: 'Chevrolet',
+      models: [
+        'Onix Sedan',
+        'Onix Hatchback',
+        'Tracker Turbo',
+        'Captiva XL',
+        'Colorado 2.8',
+        'Colorado 2.8 High Country',
+        'N400 Max',
+        'Tahoe',
+        'Traverse',
+        'Equinox EV',
+        'Blazer EV',
+      ],
+    },
+    {
+      name: 'Toyota',
+      models: [
+        'Yaris Hatchback',
+        'Yaris Sedan',
+        'Corolla Sedan 2.0',
+        'Hilux 2.4 Diesel',
+        'Hilux 2.8 Diesel',
+        'Fortuner 2.8 Diesel',
+        'Land Cruiser 300 Diesel',
+        'Prado 250 Diesel',
+        'Corolla Cross HEV',
+        'Corolla Sedan HEV',
+        'Yaris Cross HEV',
+        'RAV4 HEV',
+        'bZ4X EV',
+      ],
+    },
+    {
+      name: 'Mazda',
+      models: [
+        'Mazda 2 Hatchback',
+        'Mazda 2 Sedan',
+        'Mazda 3 Prime 2.0',
+        'CX-30 2.0 Gasolina',
+        'CX-5 2.0 Gasolina',
+        'CX-5 2.5 AWD',
+        'CX-50 2.5 Grand Touring',
+        'Mazda 3 MHEV Híbrido',
+        'CX-30 MHEV Híbrido',
+        'CX-60 MHEV Híbrido 3.3L',
+        'CX-90 MHEV Híbrido 3.3L',
+      ],
+    },
+    {
+      name: 'Kia',
+      models: [
+        'Picanto 1.0L',
+        'Picanto 1.25L',
+        'Soluto 1.4L',
+        'K3 Sedan 1.6L',
+        'K3 Cross 1.6L',
+        'Seltos 1.6L',
+        'Sportage 2.0L 4x2',
+        'Sportage 2.0L AWD',
+        'Sorento 2.5L Turbo',
+        'Niro HEV Híbrido',
+        'EV6 Eléctrico',
+        'EV9 Eléctrico',
+      ],
+    },
+    {
+      name: 'Hyundai',
+      models: [
+        'HB20 Getz 1.6L',
+        'HB20 Accent 1.6L',
+        'Creta 1.5L',
+        'Tucson 2.0L Gasolina',
+        'Santa Fe 2.5L Turbo',
+        'Kona HEV Híbrido',
+        'Tucson HEV Híbrido',
+        'Ioniq 5 Eléctrico',
+      ],
+    },
+    {
+      name: 'Nissan',
+      models: [
+        'March 1.6L',
+        'Versa 1.6L Drive',
+        'Versa 1.6L Exclusive',
+        'Kicks 1.6L Advance',
+        'Sentra 2.0L',
+        'Frontier 2.5 Diesel 4x2',
+        'Frontier 2.5 Diesel 4x4 PRO-4X',
+        'X-Trail e-POWER Híbrido',
+        'Kicks e-POWER Híbrido',
+        'Leaf Eléctrico',
+      ],
+    },
+    {
+      name: 'Suzuki',
+      models: [
+        'Alto 800',
+        'Swift 1.2L Gasolina',
+        'S-Presso 1.0L',
+        'Jimny 1.5L 3 puertas',
+        'Jimny 1.5L 5 puertas',
+        'Swift Hybrid MHEV',
+        'Fronx Hybrid MHEV',
+        'Grand Vitara Hybrid MHEV',
+      ],
+    },
+    {
+      name: 'Volkswagen',
+      models: [
+        'Polo 1.6L',
+        'Polo GTS 1.4 TSI',
+        'Virtus 1.6L',
+        'Nivus 1.0 TSI',
+        'T-Cross 1.0 TSI',
+        'Taos 1.4 TSI',
+        'Amarok V6 3.0 Diesel',
+        'ID.4 Eléctrico',
+      ],
+    },
+    {
+      name: 'Ford',
+      models: [
+        'Ranger 2.0 Diesel Single Turbo',
+        'Ranger 2.0 Diesel Bi-Turbo',
+        'Ranger 3.0 V6 Diesel',
+        'Everest 3.0 V6 Diesel',
+        'F-150 Lariat 3.5 V6',
+        'Escape Full Hybrid HEV',
+        'F-150 PowerBoost Hybrid',
+        'Mustang Mach-E Eléctrico',
+      ],
+    },
+    {
+      name: 'BYD',
+      models: [
+        'Song Plus DM-i PHEV',
+        'Qin Plus DM-i PHEV',
+        'Shark Pickup PHEV',
+        'Dolphin Mini EV',
+        'Dolphin EV',
+        'Yuan Plus EV',
+        'Seal EV',
+        'Tang EV',
+        'Han EV',
+      ],
+    },
+    {
+      name: 'Chery',
+      models: [
+        'Tiggo 4 Pro Gasolina',
+        'Tiggo 7 Pro Plug-in Hybrid PHEV',
+        'Tiggo 8 Pro Plug-in Hybrid PHEV',
+        'EQ7 Eléctrico',
+      ],
+    },
+    {
+      name: 'Changan',
+      models: [
+        'Alsvin 1.4L Gasolina',
+        'CS35 Plus Turbo',
+        'CS55 Plus Turbo',
+        'UNI-K Turbo',
+        'Hunter 2.0 Diesel',
+        'Lumin Eléctrico',
+      ],
+    },
+    {
+      name: 'JAC',
+      models: [
+        'JS2 1.5L Gasolina',
+        'JS4 1.5 Turbo',
+        'T8 Pickup 2.0 Diesel',
+        'T9 Pickup 2.0 Diesel Automatic',
+        'E10X Eléctrico',
+        'EJ7 Eléctrico',
+      ],
+    },
+    {
+      name: 'Great Wall Motors GWM',
+      models: [
+        'Poer 2.0 Diesel 4x4',
+        'Haval H6 HEV Híbrido',
+        'Haval Jolion HEV Híbrido',
+        'Ora 03 Eléctrico',
+      ],
+    },
+    {
+      name: 'MG Morris Garages',
+      models: [
+        'MG3 1.5L Gasolina',
+        'MG ZS 1.5L Gasolina',
+        'MG GT 1.5 Turbo',
+        'MG ZS EV Eléctrico',
+        'MG4 EV Eléctrico',
+      ],
+    },
+    {
+      name: 'Zeekr',
+      models: ['Zeekr 001 Eléctrico', 'Zeekr X Eléctrico'],
+    },
+    {
+      name: 'DFSK',
+      models: [
+        'Glory 560 1.5 Turbo',
+        'Glory 580 1.5 Turbo',
+        'Seres 3 Eléctrico',
+      ],
+    },
+    {
+      name: 'Geely',
+      models: ['Geometry E Eléctrico', 'Geometry C Eléctrico'],
+    },
+    {
+      name: 'BMW',
+      models: [
+        '118i 1.5 Turbo',
+        '320i 2.0 Turbo',
+        'X1 sDrive20i',
+        'X3 xDrive30i',
+        'X5 xDrive30d Diesel',
+        '330e Plug-in Hybrid PHEV',
+        'X5 xDrive50e PHEV',
+        'iX1 Eléctrico',
+        'iX3 Eléctrico',
+        'i4 Eléctrico',
+        'iX Eléctrico',
+      ],
+    },
+    {
+      name: 'Mercedes-Benz',
+      models: [
+        'A 200 Sedan Turbo',
+        'C 200 AMG Line Mild Hybrid',
+        'GLC 300 4MATIC Mild Hybrid',
+        'GLE 300d 4MATIC Diesel',
+        'EQA 250 Eléctrico',
+        'EQB 350 4MATIC Eléctrico',
+        'EQE SUV Eléctrico',
+      ],
+    },
+  ],
+};
