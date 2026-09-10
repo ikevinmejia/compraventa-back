@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "nodenext",
+    "types": ["node", "multer"],
     "moduleResolution": "nodenext",
     "resolvePackageJsonExports": true,
     "esModuleInterop": true,
@@ -19,6 +20,8 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
+    // Esta propiedad (strictPropertyInitialization) en false ocasiona que no se queje el editor en los DTO con propiedades sin asignar valor
+    "strictPropertyInitialization": false,
     "noFallthroughCasesInSwitch": false
   }
 }
