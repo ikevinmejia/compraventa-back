@@ -2,10 +2,18 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Brand } from '../brands/entities/brand.entity';
 import { Car } from '../cars/entities/car.entity';
-import { EngineType } from '../engine-types/entities/engine-type.entity';
-import { InventoryState } from '../inventory-states/entities/inventory-state.entity';
+import {
+  AdjustmentType,
+  ChassisDamage,
+  EngineType,
+  InventoryState,
+  PaintCondition,
+  RimsType,
+  StructuralCondition,
+  TiresCondition,
+  Transmission,
+} from '../common/entities/';
 import { Model } from '../models/entities/model.entity';
-import { Transmission } from '../transmissions/entities/transmission.entity';
 import { SeedController } from './seed.controller';
 import { SeedService } from './seed.service';
 
@@ -18,7 +26,13 @@ import { SeedService } from './seed.service';
       Brand,
       Model,
       EngineType,
+      AdjustmentType,
+      ChassisDamage,
       InventoryState,
+      PaintCondition,
+      RimsType,
+      StructuralCondition,
+      TiresCondition,
       Transmission,
     ]),
   ],

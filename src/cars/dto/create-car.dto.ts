@@ -3,8 +3,8 @@ import {
   IsIn,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
   Matches,
   MaxLength,
@@ -35,37 +35,36 @@ export class CreateCarDto {
   slug?: string;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsPositive()
   brandId: number;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsPositive()
   modelId: number;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsPositive()
   year: number;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsPositive()
   engineTypeId: number;
 
   // Se valida SOLO si NO es eléctrico
   @ValidateIf((o: CreateCarDto) => o.engineTypeId !== ENGINE_TYPE.ELECTRICO)
-  @IsNotEmpty({
-    message: 'displacement es obligatorio para motores térmicos e híbridos',
-  })
-  @IsNumber({}, { message: 'displacement debe ser un número válido' })
+  @IsInt()
+  @IsPositive()
   @Min(50, { message: 'displacement debe ser mayor a 50 cc' })
   displacement: number;
 
   @IsInt()
   @IsIn(Object.values(INVENTARY_STATE))
-  @IsNotEmpty()
-  inventoryStateId: number;
+  @IsPositive()
+  @IsOptional()
+  inventoryStateId?: number;
 
   @IsInt()
+  @IsPositive()
   @IsIn(Object.values(TYPE_TRANSSMISION))
-  @IsNotEmpty()
   transmissionId: number;
 }

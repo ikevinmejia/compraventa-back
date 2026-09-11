@@ -1,16 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DataSource } from 'typeorm/browser';
 import { Brand } from '../brands/entities/brand.entity';
-import { EngineType } from '../engine-types/entities/engine-type.entity';
-import { InventoryState } from '../inventory-states/entities/inventory-state.entity';
+import {
+  AdjustmentType,
+  ChassisDamage,
+  EngineType,
+  InventoryState,
+  PaintCondition,
+  RimsType,
+  StructuralCondition,
+  TiresCondition,
+  Transmission,
+} from '../common/entities';
+
 import { Model } from '../models/entities/model.entity';
-import { Transmission } from '../transmissions/entities/transmission.entity';
 import { initialData } from './data/seed-data';
 
 @Injectable()
 export class SeedService {
   constructor(
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
+
     @InjectRepository(Brand)
     private readonly brandRepo: Repository<Brand>,
     @InjectRepository(Model)
@@ -21,11 +34,25 @@ export class SeedService {
     private readonly transmissionRepo: Repository<Transmission>,
     @InjectRepository(InventoryState)
     private readonly inventoryStateRepo: Repository<InventoryState>,
+    @InjectRepository(AdjustmentType)
+    private readonly adjustmentTypeRepo: Repository<AdjustmentType>,
+    @InjectRepository(ChassisDamage)
+    private readonly chassisDamageRepo: Repository<ChassisDamage>,
+    @InjectRepository(PaintCondition)
+    private readonly paintConditionRepo: Repository<PaintCondition>,
+    @InjectRepository(RimsType)
+    private readonly rimsTypeRepo: Repository<RimsType>,
+    @InjectRepository(StructuralCondition)
+    private readonly structuralConditionRepo: Repository<StructuralCondition>,
+    @InjectRepository(TiresCondition)
+    private readonly tiresConditionRepo: Repository<TiresCondition>,
   ) {}
 
   async runSeed() {
+    await this.clearDatabase(); // Limpia toda la base de datos
     await this.seedCatalogs();
     await this.seedBrandsAndModels();
+    return 'Seed generated';
   }
 
   private async seedCatalogs() {
@@ -40,6 +67,30 @@ export class SeedService {
 
     for (const [index, name] of initialData.inventoryStates.entries()) {
       await this.inventoryStateRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.adjustmentType.entries()) {
+      await this.adjustmentTypeRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.chassisDamage.entries()) {
+      await this.chassisDamageRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.paintCondition.entries()) {
+      await this.paintConditionRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.rimsType.entries()) {
+      await this.rimsTypeRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.structuralCondition.entries()) {
+      await this.structuralConditionRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.tiresCondition.entries()) {
+      await this.tiresConditionRepo.save({ id: index + 1, name });
     }
   }
 
@@ -69,6 +120,38 @@ export class SeedService {
           );
         }
       }
+    }
+  }
+
+  private async clearDatabase() {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+
+    try {
+      // TRUNCATE elimina los datos y RESTART IDENTITY reinicia los IDs a 1
+      // CASCADE elimina automáticamente los registros de tablas hijas
+
+      await queryRunner.query(`
+        TRUNCATE TABLE
+        "cars",
+        "models",
+        "brands",
+        "engine_types",
+        "transmissions",
+        "inventory_states",
+        "adjustment_types",
+        "structural_conditions",
+        "rims_types",
+        "tires_conditions",
+        "paint_conditions",
+        "chassis_damages"
+        RESTART IDENTITY CASCADE;
+        `);
+    } catch (error) {
+      console.error('Error limpiando la base de datos:', error);
+    } finally {
+      await queryRunner.release();
     }
   }
 }

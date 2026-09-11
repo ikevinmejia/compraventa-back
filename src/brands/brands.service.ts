@@ -3,19 +3,23 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Model } from '../models/entities/model.entity';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
 
 @Injectable()
 export class BrandsService {
-  private readonly logger = new Logger('CarsService');
+  private readonly logger = new Logger('BrandsService');
   constructor(
     @InjectRepository(Brand)
     private readonly brandRepository: Repository<Brand>,
+    @InjectRepository(Model)
+    private readonly modelRepository: Repository<Model>,
   ) {}
 
   async create(createBrandDto: CreateBrandDto) {
@@ -28,12 +32,45 @@ export class BrandsService {
     }
   }
 
-  findAll() {
-    return `This action returns all brands`;
+  async findAll() {
+    try {
+      const brands = await this.brandRepository.find();
+
+      return brands;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} brand`;
+  async findOne(id: number) {
+    try {
+      const brand = await this.brandRepository.findOneBy({ id });
+
+      return brand;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
+  async findModelsByBrand(brandId: number) {
+    try {
+      const brandExists = await this.brandRepository.existsBy({ id: brandId });
+
+      if (!brandExists) {
+        throw new NotFoundException(
+          `Brand with id '${brandId}' doesn't exists`,
+        );
+      }
+
+      const brand = await this.modelRepository.find({
+        where: { brandId },
+        select: { id: true, name: true },
+      });
+
+      return brand;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
   update(id: number, updateBrandDto: UpdateBrandDto) {

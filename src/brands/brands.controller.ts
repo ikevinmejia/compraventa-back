@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
@@ -20,6 +28,11 @@ export class BrandsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.brandsService.findOne(+id);
+  }
+
+  @Get(':brandId/models')
+  findModelsByBrand(@Param('brandId') brandId: string) {
+    return this.brandsService.findModelsByBrand(+brandId);
   }
 
   @Patch(':id')

@@ -1,4 +1,10 @@
-import { IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsPositive,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateModelDto {
   @IsString()
@@ -7,6 +13,6 @@ export class CreateModelDto {
   name: string;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsPositive()
   brandId: number;
 }

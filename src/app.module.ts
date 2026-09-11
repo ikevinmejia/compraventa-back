@@ -3,13 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CarsModule } from './cars/cars.module';
 import { BrandsModule } from './brands/brands.module';
+import { CarsModule } from './cars/cars.module';
 import { ModelsModule } from './models/models.module';
-import { EngineTypesModule } from './engine-types/engine-types.module';
-import { InventoryStatesModule } from './inventory-states/inventory-states.module';
-import { TransmissionsModule } from './transmissions/transmissions.module';
 import { SeedModule } from './seed/seed.module';
+import { CarCosmeticInspectionModule } from './car-cosmetic-inspection/car-cosmetic-inspection.module';
 
 @Module({
   imports: [
@@ -33,16 +31,9 @@ import { SeedModule } from './seed/seed.module';
     }),
 
     BrandsModule,
-
     ModelsModule,
-
-    EngineTypesModule,
-
-    InventoryStatesModule,
-
-    TransmissionsModule,
-
     SeedModule,
+    CarCosmeticInspectionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

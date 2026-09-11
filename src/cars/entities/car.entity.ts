@@ -5,13 +5,15 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Brand } from '../../brands/entities/brand.entity';
-import { EngineType } from '../../engine-types/entities/engine-type.entity';
-import { InventoryState } from '../../inventory-states/entities/inventory-state.entity';
+import { CarCosmeticInspection } from '../../car-cosmetic-inspection/entities/car-cosmetic-inspection.entity';
+import { EngineType } from '../../common/entities/engine-type.entity';
+import { InventoryState } from '../../common/entities/inventory-state.entity';
+import { Transmission } from '../../common/entities/transmission.entity';
 import { Model } from '../../models/entities/model.entity';
-import { Transmission } from '../../transmissions/entities/transmission.entity';
 
 @Entity('cars')
 export class Car {
@@ -77,11 +79,14 @@ export class Car {
   @Column('int', { default: 1 }) // Por default "En peritaje"
   inventoryStateId: number;
 
+  @OneToOne(() => CarCosmeticInspection, (inspection) => inspection.car)
+  cosmeticInspection: CarCosmeticInspection;
+
   @BeforeInsert()
   @BeforeUpdate()
   checkSlug() {
     // Se usa numberPlate en lugar de id porque numberPlate sí existe antes de insertar
-    const baseString = `${this.brand?.name || ''} ${this.model?.name || ''} ${this.year} ${this.numberPlate}`;
+    const baseString = `${this.brand?.name || ''}-${this.model?.name || ''}-${this.year}-${this.numberPlate}`;
 
     this.slug = baseString
       .toLowerCase()
