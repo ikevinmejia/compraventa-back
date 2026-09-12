@@ -5,5 +5,7 @@ export * from './inventory-state.entity';
 export * from './paint-condition.entity';
 export * from './rims-type.entity';
 export * from './structural-condition.entity';
+export * from './suspension-condition.entity';
 export * from './tires-condition.entity';
+export * from './transmission-condition.entity';
 export * from './transmission.entity';

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DataSource } from 'typeorm/browser';
@@ -11,8 +11,10 @@ import {
   PaintCondition,
   RimsType,
   StructuralCondition,
+  SuspensionCondition,
   TiresCondition,
   Transmission,
+  TransmissionCondition,
 } from '../common/entities';
 
 import { Model } from '../models/entities/model.entity';
@@ -46,6 +48,10 @@ export class SeedService {
     private readonly structuralConditionRepo: Repository<StructuralCondition>,
     @InjectRepository(TiresCondition)
     private readonly tiresConditionRepo: Repository<TiresCondition>,
+    @InjectRepository(SuspensionCondition)
+    private readonly suspensionConditionRepo: Repository<SuspensionCondition>,
+    @InjectRepository(TransmissionCondition)
+    private readonly transmissionConditionRepo: Repository<TransmissionCondition>,
   ) {}
 
   async runSeed() {
@@ -91,6 +97,14 @@ export class SeedService {
 
     for (const [index, name] of initialData.tiresCondition.entries()) {
       await this.tiresConditionRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.suspensionCondition.entries()) {
+      await this.suspensionConditionRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.transmissionCondition.entries()) {
+      await this.transmissionConditionRepo.save({ id: index + 1, name });
     }
   }
 
@@ -145,11 +159,16 @@ export class SeedService {
         "rims_types",
         "tires_conditions",
         "paint_conditions",
-        "chassis_damages"
+        "chassis_damages",
+        "suspension_conditions",
+        "transmission_conditions",
+        "car_cosmetic_inspections",
+        "car_mechanical_inspections"
         RESTART IDENTITY CASCADE;
         `);
     } catch (error) {
       console.error('Error limpiando la base de datos:', error);
+      throw new InternalServerErrorException('Error limpiando base de datos');
     } finally {
       await queryRunner.release();
     }

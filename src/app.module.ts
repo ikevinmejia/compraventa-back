@@ -8,6 +8,7 @@ import { CarsModule } from './cars/cars.module';
 import { ModelsModule } from './models/models.module';
 import { SeedModule } from './seed/seed.module';
 import { CarCosmeticInspectionModule } from './car-cosmetic-inspection/car-cosmetic-inspection.module';
+import { CarMechanicalInspectionsModule } from './car-mechanical-inspections/car-mechanical-inspections.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CarCosmeticInspectionModule } from './car-cosmetic-inspection/car-cosme
     ModelsModule,
     SeedModule,
     CarCosmeticInspectionModule,
+    CarMechanicalInspectionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

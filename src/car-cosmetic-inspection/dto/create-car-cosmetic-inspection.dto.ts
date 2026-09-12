@@ -84,8 +84,8 @@ export class CreateCarCosmeticInspectionDto {
   @IsBoolean()
   hasSpareTire: boolean; // Llanta de repuesto
 
+  @IsOptional()
   @IsString()
   @MaxLength(3000)
-  @IsOptional()
   additionalObservations?: string; // Llanta de repuesto
 }

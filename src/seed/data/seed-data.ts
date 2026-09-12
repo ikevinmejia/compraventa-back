@@ -8,6 +8,8 @@ interface seed {
   tiresCondition: string[];
   paintCondition: string[];
   chassisDamage: string[];
+  transmissionCondition: string[];
+  suspensionCondition: string[];
   // cars: {
   //   numberPlate: string;
   //   year: number;
@@ -39,6 +41,8 @@ export const initialData: seed = {
   tiresCondition: ['Malas', 'Media vida', 'Buenas'],
   paintCondition: ['Original', 'Repintada', 'Deteriorada'],
   chassisDamage: ['Conductor', 'Pasajero', 'Ambas', 'Ninguno'],
+  transmissionCondition: ['Buena', 'Desgaste', 'Deslizando', 'Molestando'],
+  suspensionCondition: ['Buena', 'Cajoneo', 'Mala'],
   brands: [
     {
       name: 'Toyota',

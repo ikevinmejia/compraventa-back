@@ -36,7 +36,7 @@ export class CarCosmeticInspectionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.carCosmeticInspectionService.findOne(+id);
+    return this.carCosmeticInspectionService.findOne(id);
   }
 
   @Patch(':id')
@@ -45,13 +45,13 @@ export class CarCosmeticInspectionController {
     @Body() updateCarCosmeticInspectionDto: UpdateCarCosmeticInspectionDto,
   ) {
     return this.carCosmeticInspectionService.update(
-      +id,
+      id,
       updateCarCosmeticInspectionDto,
     );
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.carCosmeticInspectionService.remove(+id);
+    return this.carCosmeticInspectionService.remove(id);
   }
 }

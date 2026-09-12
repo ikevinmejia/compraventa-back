@@ -61,10 +61,10 @@ export class CreateCarDto {
   @Min(50, { message: 'displacement debe ser mayor a 50 cc' })
   displacement: number;
 
+  @IsOptional()
   @IsInt()
   @IsIn(Object.values(INVENTARY_STATE))
   @IsPositive()
-  @IsOptional()
   inventoryStateId?: number;
 
   @IsInt()
