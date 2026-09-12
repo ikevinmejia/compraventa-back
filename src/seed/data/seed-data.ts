@@ -10,6 +10,8 @@ interface seed {
   chassisDamage: string[];
   transmissionCondition: string[];
   suspensionCondition: string[];
+  runtPendingIssues: string[];
+  insuranceClaimType: string[];
   // cars: {
   //   numberPlate: string;
   //   year: number;
@@ -26,15 +28,15 @@ interface seed {
 }
 
 export const initialData: seed = {
-  engineTypes: ['GASOLINA', 'DIESEL', 'HIBRIDO', 'ELECTRICO'],
+  engineTypes: ['Gasolina', 'Diesel', 'Híbrido', 'Eléctrico'],
   inventoryStates: [
-    'EN PERITAJE',
-    'ALISTAMIENTO',
-    'DISPONIBLE',
-    'SEPARADO',
-    'VENDIDO',
+    'En peritaje',
+    'Alistamiento',
+    'Disponible',
+    'Separado',
+    'Vendido',
   ],
-  transmissions: ['MECANICA', 'AUTOMATICA', 'NA'],
+  transmissions: ['Mecánica', 'Automatica', 'No Aplica'],
   adjustmentType: ['Manual', 'Eléctrico'],
   structuralCondition: ['Partido', 'Arreglado', 'Original'],
   rimsType: ['De lujo', 'Original'],
@@ -43,6 +45,8 @@ export const initialData: seed = {
   chassisDamage: ['Conductor', 'Pasajero', 'Ambas', 'Ninguno'],
   transmissionCondition: ['Buena', 'Desgaste', 'Deslizando', 'Molestando'],
   suspensionCondition: ['Buena', 'Cajoneo', 'Mala'],
+  runtPendingIssues: ['Prenda natural', 'Embargo'],
+  insuranceClaimType: ['Menor cuantía', 'Mayor cuantía', 'Ninguna'],
   brands: [
     {
       name: 'Toyota',

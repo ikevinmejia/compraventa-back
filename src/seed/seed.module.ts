@@ -7,8 +7,10 @@ import { Car } from '../cars/entities/car.entity';
 import {
   AdjustmentType,
   ChassisDamage,
+  Departamento,
   EngineType,
   InventoryState,
+  Municipio,
   PaintCondition,
   RimsType,
   StructuralCondition,
@@ -26,6 +28,9 @@ import { SeedService } from './seed.service';
   providers: [SeedService],
   imports: [
     TypeOrmModule.forFeature([
+      Departamento,
+      Municipio,
+
       Car,
       Brand,
       Model,

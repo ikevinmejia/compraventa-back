@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { Brand } from '../../brands/entities/brand.entity';
 import { CarCosmeticInspection } from '../../car-cosmetic-inspection/entities/car-cosmetic-inspection.entity';
+import { CarLegalVerification } from '../../car-legal-verification/entities/car-legal-verification.entity';
 import { CarMechanicalInspection } from '../../car-mechanical-inspections/entities/car-mechanical-inspection.entity';
 import { EngineType } from '../../common/entities/engine-type.entity';
 import { InventoryState } from '../../common/entities/inventory-state.entity';
@@ -101,6 +102,9 @@ export class Car {
 
   @OneToOne(() => CarMechanicalInspection, (inspection) => inspection.car)
   mechanicalInspection: CarMechanicalInspection;
+
+  @OneToOne(() => CarLegalVerification, (legal) => legal.car)
+  legalVerification: CarLegalVerification;
 
   // @BeforeInsert()
   // @BeforeUpdate()

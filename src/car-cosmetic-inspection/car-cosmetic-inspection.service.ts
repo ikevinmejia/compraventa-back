@@ -17,8 +17,8 @@ export class CarCosmeticInspectionService {
     createCarCosmeticInspectionDto: CreateCarCosmeticInspectionDto,
   ) {
     const car = this.carCosmeticInspectionRepo.create({
-      carId,
       ...createCarCosmeticInspectionDto,
+      carId,
     });
 
     await this.carCosmeticInspectionRepo.save(car);

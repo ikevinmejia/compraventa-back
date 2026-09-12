@@ -1,6 +1,5 @@
 import { Transform } from 'class-transformer';
 import {
-  IsIn,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -11,11 +10,7 @@ import {
   Min,
   ValidateIf,
 } from 'class-validator';
-import {
-  ENGINE_TYPE,
-  INVENTARY_STATE,
-  TYPE_TRANSSMISION,
-} from '../interface/car.interface';
+import { ENGINE_TYPE } from '../interface/car.interface';
 
 export class CreateCarDto {
   @IsString()
@@ -63,12 +58,10 @@ export class CreateCarDto {
 
   @IsOptional()
   @IsInt()
-  @IsIn(Object.values(INVENTARY_STATE))
   @IsPositive()
   inventoryStateId?: number;
 
   @IsInt()
   @IsPositive()
-  @IsIn(Object.values(TYPE_TRANSSMISION))
   transmissionId: number;
 }

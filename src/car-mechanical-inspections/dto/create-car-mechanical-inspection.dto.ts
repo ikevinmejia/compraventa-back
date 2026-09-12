@@ -4,11 +4,12 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
 } from 'class-validator';
 
 export class CreateCarMechanicalInspectionDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   carId: string;
 

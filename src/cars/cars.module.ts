@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Brand } from '../brands/entities/brand.entity';
 import { CarCosmeticInspection } from '../car-cosmetic-inspection/entities/car-cosmetic-inspection.entity';
+import { CarLegalVerification } from '../car-legal-verification/entities/car-legal-verification.entity';
 import { CarMechanicalInspection } from '../car-mechanical-inspections/entities/car-mechanical-inspection.entity';
 import {
   EngineType,
@@ -30,6 +31,7 @@ import { Car } from './entities/car.entity';
       CarCosmeticInspection,
       SuspensionCondition,
       TransmissionCondition,
+      CarLegalVerification,
     ]),
   ],
   exports: [TypeOrmModule],

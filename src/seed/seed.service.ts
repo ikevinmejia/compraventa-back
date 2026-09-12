@@ -6,8 +6,10 @@ import { Brand } from '../brands/entities/brand.entity';
 import {
   AdjustmentType,
   ChassisDamage,
+  Departamento,
   EngineType,
   InventoryState,
+  Municipio,
   PaintCondition,
   RimsType,
   StructuralCondition,
@@ -18,6 +20,7 @@ import {
 } from '../common/entities';
 
 import { Model } from '../models/entities/model.entity';
+import { colombiaJson } from './data/colombia-json';
 import { initialData } from './data/seed-data';
 
 @Injectable()
@@ -25,6 +28,11 @@ export class SeedService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+
+    @InjectRepository(Departamento)
+    private readonly departamentoRepo: Repository<Departamento>,
+    @InjectRepository(Municipio)
+    private readonly municipioRepo: Repository<Municipio>,
 
     @InjectRepository(Brand)
     private readonly brandRepo: Repository<Brand>,
@@ -56,6 +64,7 @@ export class SeedService {
 
   async runSeed() {
     await this.clearDatabase(); // Limpia toda la base de datos
+    await this.seedColombia();
     await this.seedCatalogs();
     await this.seedBrandsAndModels();
     return 'Seed generated';
@@ -63,6 +72,7 @@ export class SeedService {
 
   private async seedCatalogs() {
     // 1. Catálogos estáticos simples
+
     for (const [index, name] of initialData.engineTypes.entries()) {
       await this.engineTypeRepo.save({ id: index + 1, name });
     }
@@ -105,6 +115,26 @@ export class SeedService {
 
     for (const [index, name] of initialData.transmissionCondition.entries()) {
       await this.transmissionConditionRepo.save({ id: index + 1, name });
+    }
+  }
+
+  private async seedColombia() {
+    // 1 Poblar los departamentos y municipios relacionados
+    for (const { departamento, id, ciudades } of colombiaJson) {
+      const dprtmnto = this.departamentoRepo.create({ name: departamento, id });
+
+      await this.departamentoRepo.save(dprtmnto);
+
+      // 2. Poblar los municipios de acuerdo a su departamento
+
+      for (const municipio of ciudades) {
+        const mncpio = this.municipioRepo.create({
+          departamentoId: id,
+          name: municipio,
+        });
+
+        await this.municipioRepo.save(mncpio);
+      }
     }
   }
 

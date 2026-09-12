@@ -9,6 +9,7 @@ import { ModelsModule } from './models/models.module';
 import { SeedModule } from './seed/seed.module';
 import { CarCosmeticInspectionModule } from './car-cosmetic-inspection/car-cosmetic-inspection.module';
 import { CarMechanicalInspectionsModule } from './car-mechanical-inspections/car-mechanical-inspections.module';
+import { CarLegalVerificationModule } from './car-legal-verification/car-legal-verification.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { CarMechanicalInspectionsModule } from './car-mechanical-inspections/car
     SeedModule,
     CarCosmeticInspectionModule,
     CarMechanicalInspectionsModule,
+    CarLegalVerificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
