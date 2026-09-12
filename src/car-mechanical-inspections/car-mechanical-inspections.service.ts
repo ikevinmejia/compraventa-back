@@ -1,29 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateCarMechanicalInspectionDto } from './dto/create-car-mechanical-inspection.dto';
 import { UpdateCarMechanicalInspectionDto } from './dto/update-car-mechanical-inspection.dto';
+import { CarMechanicalInspection } from './entities/car-mechanical-inspection.entity';
 
 @Injectable()
 export class CarMechanicalInspectionsService {
-  create(createCarMechanicalInspectionDto: CreateCarMechanicalInspectionDto) {
-    return 'This action adds a new carMechanicalInspection';
+  constructor(
+    @InjectRepository(CarMechanicalInspection)
+    private readonly carMechanicalInspRepo: Repository<CarMechanicalInspection>,
+  ) {}
+
+  async create(
+    createCarMechanicalInspectionDto: CreateCarMechanicalInspectionDto,
+  ) {
+    const carInspection = this.carMechanicalInspRepo.create(
+      createCarMechanicalInspectionDto,
+    );
+
+    await this.carMechanicalInspRepo.save(carInspection);
+
+    return carInspection;
   }
 
-  findAll() {
-    return `This action returns all carMechanicalInspections`;
+  async findAll() {
+    const carInspections = await this.carMechanicalInspRepo.find({});
+
+    return carInspections;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} carMechanicalInspection`;
+  async findOne(id: string) {
+    const carInpection = await this.carMechanicalInspRepo.findOneBy({ id });
+
+    if (!carInpection) {
+      throw new NotFoundException(`Car inspection with id ${id} not found`);
+    }
+
+    return carInpection;
   }
 
-  update(
-    id: number,
+  async update(
+    id: string,
     updateCarMechanicalInspectionDto: UpdateCarMechanicalInspectionDto,
   ) {
-    return `This action updates a #${id} carMechanicalInspection`;
+    await this.carMechanicalInspRepo.update(
+      id,
+      updateCarMechanicalInspectionDto,
+    );
+
+    return `car inspection with id ${id} updated`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} carMechanicalInspection`;
   }
 }

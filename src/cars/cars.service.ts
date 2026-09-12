@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -13,8 +7,6 @@ import { Car } from './entities/car.entity';
 
 @Injectable()
 export class CarsService {
-  private readonly logger = new Logger('CarsService');
-
   constructor(
     @InjectRepository(Car)
     private readonly carRepository: Repository<Car>,
@@ -29,16 +21,13 @@ export class CarsService {
       plate: createCarDto.plate,
       year: createCarDto.year,
     });
-    try {
-      await this.carRepository.save({
-        ...car,
-        slug,
-      });
 
-      return car;
-    } catch (error) {
-      this.handleDBExceptions(error);
-    }
+    await this.carRepository.save({
+      ...car,
+      slug,
+    });
+
+    return car;
   }
 
   async findAll() {
@@ -64,15 +53,11 @@ export class CarsService {
   }
 
   async findOne(id: string) {
-    try {
-      const car = await this.carRepository.findOne({ where: { id } });
-      if (!car) {
-        throw new NotFoundException(`Car with id '${id}' not found.`);
-      }
-      return car;
-    } catch (error) {
-      this.handleDBExceptions(error);
+    const car = await this.carRepository.findOne({ where: { id } });
+    if (!car) {
+      throw new NotFoundException(`Car with id '${id}' not found.`);
     }
+    return car;
   }
 
   async update(id: string, updateCarDto: UpdateCarDto) {
@@ -82,19 +67,16 @@ export class CarsService {
       plate: updateCarDto.plate!,
       year: updateCarDto.year!,
     });
-    try {
-      const result = await this.carRepository.update(id, {
-        ...updateCarDto,
-        slug,
-      });
 
-      if (result.affected === 0) {
-        throw new NotFoundException(`Model with id '${id} doesn't exists'`);
-      }
-      return `Car with id #${id} has been updated`;
-    } catch (error) {
-      this.handleDBExceptions(error);
+    const result = await this.carRepository.update(id, {
+      ...updateCarDto,
+      slug,
+    });
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Model with id '${id} doesn't exists'`);
     }
+    return `Car with id #${id} has been updated`;
   }
 
   async remove(id: string) {
@@ -145,19 +127,5 @@ export class CarsService {
       .replace(/[^a-z0-9 -]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
-  }
-
-  private handleDBExceptions(error: unknown) {
-    const dbError = error as { code?: unknown; detail?: unknown };
-
-    if (dbError.code === '23505') {
-      throw new BadRequestException(
-        typeof dbError.detail === 'string' ? dbError.detail : undefined,
-      );
-    }
-    this.logger.error(error);
-    throw new InternalServerErrorException(
-      'Unexpected server error, check logs',
-    );
   }
 }
