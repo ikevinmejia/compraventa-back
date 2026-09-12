@@ -24,15 +24,19 @@ export class CreateCarDto {
   @Transform(({ value }: { value: string }) => value?.toUpperCase().trim())
   // Valida que cumpla estrictamente el patrón de la placa
   @Matches(/^[A-Z]{3}[0-9]{3}$/, {
-    message:
-      'numberPlate: Debe tener un formato válido en Colombia (ej. ABC123).',
+    message: 'plate: Debe tener un formato válido en Colombia (ej. ABC123).',
   })
-  numberPlate: string;
+  plate: string;
 
   @IsString()
-  @MaxLength(6)
-  @IsOptional()
-  slug?: string;
+  @IsNotEmpty()
+  @MaxLength(20)
+  brandNameHint: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(20)
+  modelNameHint: string;
 
   @IsInt()
   @IsPositive()

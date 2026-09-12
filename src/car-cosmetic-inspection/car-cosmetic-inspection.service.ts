@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -36,22 +37,49 @@ export class CarCosmeticInspectionService {
     }
   }
 
-  findAll() {
-    return `This action returns all carCosmeticInspection`;
+  async findAll() {
+    try {
+      const items = await this.carCosmeticInspectionRepo.find();
+      return items;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} carCosmeticInspection`;
+  async findOne(id: string) {
+    try {
+      const item = await this.carCosmeticInspectionRepo.findOneBy({ id });
+
+      if (!item) {
+        throw new NotFoundException(
+          `cosmetic inspection with id #${id} not found`,
+        );
+      }
+
+      return item;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
-  update(
-    id: number,
+  async update(
+    id: string,
     updateCarCosmeticInspectionDto: UpdateCarCosmeticInspectionDto,
   ) {
-    return `This action updates a #${id} carCosmeticInspection`;
+    const result = await this.carCosmeticInspectionRepo.update(id, {
+      ...updateCarCosmeticInspectionDto,
+    });
+
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `cosmetic inspection with id #${id} not found`,
+      );
+    }
+
+    return `cosmetic inspection updated!`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} carCosmeticInspection`;
   }
 

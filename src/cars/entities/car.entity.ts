@@ -1,12 +1,14 @@
+import { Exclude } from 'class-transformer';
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Brand } from '../../brands/entities/brand.entity';
 import { CarCosmeticInspection } from '../../car-cosmetic-inspection/entities/car-cosmetic-inspection.entity';
@@ -20,10 +22,19 @@ export class Car {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
+
   @Column('text', {
     unique: true,
   })
-  numberPlate: string;
+  plate: string;
 
   @Column('int')
   year: number;
@@ -42,6 +53,7 @@ export class Car {
   @JoinColumn({ name: 'brandId' })
   brand: Brand;
 
+  @Exclude()
   @Column('int')
   brandId: number;
 
@@ -51,6 +63,7 @@ export class Car {
   @JoinColumn({ name: 'modelId' })
   model: Model;
 
+  @Exclude()
   @Column('int')
   modelId: number;
 
@@ -59,6 +72,7 @@ export class Car {
   @JoinColumn({ name: 'engineTypeId' })
   engineType: EngineType;
 
+  @Exclude()
   @Column('int')
   engineTypeId: number;
 
@@ -67,6 +81,7 @@ export class Car {
   @JoinColumn({ name: 'transmissionId' })
   transmissionType: Transmission;
 
+  @Exclude()
   @Column('int')
   transmissionId: number;
 
@@ -76,25 +91,13 @@ export class Car {
   @JoinColumn({ name: 'inventoryStateId' })
   inventoryState: InventoryState;
 
+  @Exclude()
   @Column('int', { default: 1 }) // Por default "En peritaje"
   inventoryStateId: number;
 
   @OneToOne(() => CarCosmeticInspection, (inspection) => inspection.car)
   cosmeticInspection: CarCosmeticInspection;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  checkSlug() {
-    // Se usa numberPlate en lugar de id porque numberPlate sí existe antes de insertar
-    const baseString = `${this.brand?.name || ''}-${this.model?.name || ''}-${this.year}-${this.numberPlate}`;
-
-    this.slug = baseString
-      .toLowerCase()
-      .trim()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remueve acentos (ej. Híbrido -> Hibrido)
-      .replace(/[^a-z0-9 -]/g, '') // Remueve caracteres especiales
-      .replace(/\s+/g, '-') // Espacios a guiones
-      .replace(/-+/g, '-'); // Remueve guiones duplicados
-  }
+  // @BeforeInsert()
+  // @BeforeUpdate()
 }
