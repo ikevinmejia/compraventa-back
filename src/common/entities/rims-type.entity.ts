@@ -5,6 +5,6 @@ export class RimsType {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('varchar', { length: 100, unique: true })
   name: string;
 }

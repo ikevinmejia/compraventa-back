@@ -2,11 +2,9 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsInt,
-  IsNotEmpty,
   IsOptional,
   IsPositive,
   IsString,
-  IsUUID,
   MaxLength,
   ValidateNested,
 } from 'class-validator';
@@ -26,11 +24,6 @@ export class WindowsCheckDto {
 }
 
 export class CreateCarCosmeticInspectionDto {
-  @IsUUID()
-  @IsNotEmpty()
-  carId;
-
-  @IsBoolean()
   electricWindowsFunctional: boolean;
 
   @ValidateNested()

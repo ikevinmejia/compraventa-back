@@ -13,11 +13,13 @@ export class CarMechanicalInspectionsService {
   ) {}
 
   async create(
+    carId: string,
     createCarMechanicalInspectionDto: CreateCarMechanicalInspectionDto,
   ) {
-    const carInspection = this.carMechanicalInspRepo.create(
-      createCarMechanicalInspectionDto,
-    );
+    const carInspection = this.carMechanicalInspRepo.create({
+      ...createCarMechanicalInspectionDto,
+      carId,
+    });
 
     await this.carMechanicalInspRepo.save(carInspection);
 

@@ -2,12 +2,19 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Car } from '../../cars/entities/car.entity';
-import { InsuranceClaimType, RuntPendingIssues } from '../../common/entities';
+import {
+  Departamento,
+  InsuranceClaimType,
+  Municipio,
+  RuntPendingIssue,
+} from '../../common/entities';
 
 @Entity('car_legal_verifications')
 export class CarLegalVerification {
@@ -18,11 +25,22 @@ export class CarLegalVerification {
   @JoinColumn({ name: 'carId' })
   car: Car;
 
-  @Column('text')
+  @Column('uuid')
   carId: string;
 
-  @Column('varchar', { length: 100 })
-  registrationCity: string; // municipio de matricula
+  @ManyToOne(() => Departamento)
+  @JoinColumn({ name: 'registrationDepartmentId' })
+  registrationDepartment: Departamento;
+
+  @Column('int')
+  registrationDepartmentId: number; // Departamento de matricula
+
+  @ManyToOne(() => Municipio)
+  @JoinColumn({ name: 'registrationCityId' })
+  registrationCity: Municipio;
+
+  @Column('int')
+  registrationCityId: number; // municipio de matricula
 
   @Column('date')
   soatExpirationDate: Date; // vigencia de soat
@@ -33,7 +51,7 @@ export class CarLegalVerification {
   @Column('boolean', { default: false })
   hasTrafficFines: boolean; // Tiene fotomultas?
 
-  @Column('int')
+  @Column('int', { default: 0 })
   trafficFinesCount: number; // Cantidad de multas
 
   @Column('decimal', {
@@ -59,12 +77,16 @@ export class CarLegalVerification {
   @Column('boolean', { default: false })
   runtHasLiens: boolean; // Tiene gravamenes?
 
-  @ManyToOne(() => RuntPendingIssues)
-  @JoinColumn({ name: 'runtPendingIssueId' })
-  runtPendingIssues: RuntPendingIssues;
-
-  @Column('int')
-  runtPendingIssueId: number;
+  @ManyToMany(() => RuntPendingIssue)
+  @JoinTable({
+    name: 'car_legal_verification_runt_pending_issues', // nombre de la tabla intermedia
+    joinColumn: { name: 'carLegalVerificationId', referencedColumnName: 'id' },
+    inverseJoinColumn: {
+      name: 'runtPendingIssueId',
+      referencedColumnName: 'id',
+    },
+  })
+  runtPendingIssues: RuntPendingIssue[];
 
   @Column('boolean', { default: true })
   municipalTrafficLightTaxUpToDate: boolean; // Esta al día impuesto municipal - semaforización

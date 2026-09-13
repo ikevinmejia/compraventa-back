@@ -1,19 +1,12 @@
 import {
-  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
   MaxLength,
 } from 'class-validator';
 
 export class CreateCarMechanicalInspectionDto {
-  @IsUUID()
-  @IsNotEmpty()
-  carId: string;
-
-  @IsBoolean()
   hasEngineLeaks: boolean; // Tiene fugas el motor
 
   @IsOptional()

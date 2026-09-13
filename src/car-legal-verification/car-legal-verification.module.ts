@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { InsuranceClaimType, RuntPendingIssues } from '../common/entities';
+import {
+  Departamento,
+  InsuranceClaimType,
+  Municipio,
+  RuntPendingIssue,
+} from '../common/entities';
 import { CarLegalVerificationController } from './car-legal-verification.controller';
 import { CarLegalVerificationService } from './car-legal-verification.service';
 
@@ -10,8 +15,10 @@ import { CarLegalVerificationService } from './car-legal-verification.service';
   imports: [
     TypeOrmModule.forFeature([
       CarLegalVerificationModule,
-      RuntPendingIssues,
+      RuntPendingIssue,
       InsuranceClaimType,
+      Departamento,
+      Municipio,
     ]),
   ],
 })

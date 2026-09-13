@@ -1,71 +1,76 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
-import { InsuranceClaimType, RuntPendingIssues } from '../../common/entities';
+import { Type } from 'class-transformer';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  Min,
+  ValidateIf,
+} from 'class-validator';
 
 export class CreateCarLegalVerificationDto {
-  @IsUUID()
+  @IsPositive()
   @IsNotEmpty()
-  carId: string;
+  registrationDepartmentId: number;
 
-  @Column('varchar', { length: 100 })
-  @IsString()
+  @IsInt()
+  @IsPositive()
   @IsNotEmpty()
-  registrationC;
-  @Column('date')
+  registrationCityId: number;
+
+  @Type(() => Date)
+  @IsDate()
   soatExpirationDate: Date; // vigencia de soat
 
-  @Column('date')
+  @Type(() => Date)
+  @IsDate()
   technicalInspectionExpirationDate: Date; // vigencia tecnomecanica
 
-  @Column('boolean', { default: false })
+  @IsBoolean()
   hasTrafficFines: boolean; // Tiene fotomultas?
 
-  @Column('int')
+  @IsInt()
+  @Min(0)
   trafficFinesCount: number; // Cantidad de multas
 
-  @Column('decimal', {
-    precision: 12,
-    scale: 2,
-    default: 0,
-    transformer: {
-      to: (value: number) => value,
-      from: (value: string) => parseFloat(value), // convierte el string que devuelve pg a number
-    },
-  })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
   trafficFinesTotalAmount: number; // Total en dinero de multas
 
-  @Column('boolean', { default: false })
+  @IsBoolean()
   taxesUpToDate: boolean; // Impuestos al día si o no
 
-  @Column('int', { default: 0 })
+  @IsInt()
+  @Min(0)
   taxesOwedYears: number; // Años de deuda de impuestos
 
-  @Column('boolean', { default: true })
+  @IsBoolean()
   runtMatchesLicense: boolean; // Coincide la licencia con el runt?
 
-  @Column('boolean', { default: false })
+  @IsBoolean()
   runtHasLiens: boolean; // Tiene gravamenes?
 
-  @ManyToOne(() => RuntPendingIssues)
-  @JoinColumn({ name: 'runtPendingIssueId' })
-  runtPendingIssues: RuntPendingIssues;
+  @ValidateIf((dto: CreateCarLegalVerificationDto) => dto.runtHasLiens === true)
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsInt({ each: true })
+  runtPendingIssueIds?: number[];
 
-  @Column('int')
-  runtPendingIssueId: number;
-
-  @Column('boolean', { default: true })
+  @IsBoolean()
   municipalTrafficLightTaxUpToDate: boolean; // Esta al día impuesto municipal - semaforización
 
-  @Column('boolean', { default: false })
+  @IsBoolean()
   hadPublicServiceUse: boolean; // Tuvo uso público?
 
-  @Column('boolean', { default: false })
+  @IsBoolean()
   hasInsuranceClaims: boolean; // Tiene siniestros?
 
-  @ManyToOne(() => InsuranceClaimType)
-  @JoinColumn({ name: 'insuranceClaimTypeId' })
-  insuranceClaimType: InsuranceClaimType;
-
-  @Column('int')
+  @IsInt()
+  @IsPositive()
+  @IsNotEmpty()
   insuranceClaimTypeId: number;
 }

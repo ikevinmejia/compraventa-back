@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -17,11 +18,13 @@ export class CarMechanicalInspectionsController {
     private readonly carMechanicalInspectionsService: CarMechanicalInspectionsService,
   ) {}
 
-  @Post()
+  @Post(':carId')
   create(
+    @Param('carId', ParseUUIDPipe) carId: string,
     @Body() createCarMechanicalInspectionDto: CreateCarMechanicalInspectionDto,
   ) {
     return this.carMechanicalInspectionsService.create(
+      carId,
       createCarMechanicalInspectionDto,
     );
   }
@@ -32,13 +35,13 @@ export class CarMechanicalInspectionsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.carMechanicalInspectionsService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCarMechanicalInspectionDto: UpdateCarMechanicalInspectionDto,
   ) {
     return this.carMechanicalInspectionsService.update(
@@ -48,7 +51,7 @@ export class CarMechanicalInspectionsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.carMechanicalInspectionsService.remove(id);
   }
 }

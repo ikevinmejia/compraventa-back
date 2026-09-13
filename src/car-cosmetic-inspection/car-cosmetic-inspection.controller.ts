@@ -35,13 +35,13 @@ export class CarCosmeticInspectionController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.carCosmeticInspectionService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCarCosmeticInspectionDto: UpdateCarCosmeticInspectionDto,
   ) {
     return this.carCosmeticInspectionService.update(
@@ -51,7 +51,7 @@ export class CarCosmeticInspectionController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.carCosmeticInspectionService.remove(id);
   }
 }

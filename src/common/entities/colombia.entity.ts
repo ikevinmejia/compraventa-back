@@ -12,7 +12,7 @@ export class Departamento {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('varchar', { length: 100, unique: true })
   name: string;
 
   // * Relacion Municipio
@@ -26,7 +26,7 @@ export class Municipio {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('varchar', { length: 100, unique: true })
   name: string;
 
   // * Relacion Departamento
