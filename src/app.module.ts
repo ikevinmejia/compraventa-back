@@ -4,12 +4,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BrandsModule } from './brands/brands.module';
+import { CarCosmeticInspectionModule } from './car-cosmetic-inspection/car-cosmetic-inspection.module';
+import { CarLegalVerificationModule } from './car-legal-verification/car-legal-verification.module';
+import { CarMechanicalInspectionsModule } from './car-mechanical-inspections/car-mechanical-inspections.module';
 import { CarsModule } from './cars/cars.module';
+import { CommonModule } from './common/common.module';
 import { ModelsModule } from './models/models.module';
 import { SeedModule } from './seed/seed.module';
-import { CarCosmeticInspectionModule } from './car-cosmetic-inspection/car-cosmetic-inspection.module';
-import { CarMechanicalInspectionsModule } from './car-mechanical-inspections/car-mechanical-inspections.module';
-import { CarLegalVerificationModule } from './car-legal-verification/car-legal-verification.module';
+import { DepartmentsModule } from './departments/departments.module';
+import { MunicipalitiesModule } from './municipalities/municipalities.module';
 
 @Module({
   imports: [
@@ -38,6 +41,9 @@ import { CarLegalVerificationModule } from './car-legal-verification/car-legal-v
     CarCosmeticInspectionModule,
     CarMechanicalInspectionsModule,
     CarLegalVerificationModule,
+    CommonModule,
+    DepartmentsModule,
+    MunicipalitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

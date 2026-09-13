@@ -9,12 +9,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Car } from '../../cars/entities/car.entity';
-import {
-  Departamento,
-  InsuranceClaimType,
-  Municipio,
-  RuntPendingIssue,
-} from '../../common/entities';
+import { InsuranceClaimType, RuntPendingIssue } from '../../common/entities';
+import { Department } from '../../departments/entities/department.entity';
+import { Municipality } from '../../municipalities/entities/municipality.entity';
 
 @Entity('car_legal_verifications')
 export class CarLegalVerification {
@@ -28,16 +25,16 @@ export class CarLegalVerification {
   @Column('uuid')
   carId: string;
 
-  @ManyToOne(() => Departamento)
+  @ManyToOne(() => Department)
   @JoinColumn({ name: 'registrationDepartmentId' })
-  registrationDepartment: Departamento;
+  registrationDepartment: Department;
 
   @Column('int')
   registrationDepartmentId: number; // Departamento de matricula
 
-  @ManyToOne(() => Municipio)
+  @ManyToOne(() => Municipality)
   @JoinColumn({ name: 'registrationCityId' })
-  registrationCity: Municipio;
+  registrationCity: Municipality;
 
   @Column('int')
   registrationCityId: number; // municipio de matricula

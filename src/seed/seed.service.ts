@@ -6,10 +6,8 @@ import { Brand } from '../brands/entities/brand.entity';
 import {
   AdjustmentType,
   ChassisDamage,
-  Departamento,
   EngineType,
   InventoryState,
-  Municipio,
   PaintCondition,
   RimsType,
   StructuralCondition,
@@ -19,7 +17,9 @@ import {
   TransmissionCondition,
 } from '../common/entities';
 
+import { Department } from '../departments/entities/department.entity';
 import { Model } from '../models/entities/model.entity';
+import { Municipality } from '../municipalities/entities/municipality.entity';
 import { colombiaJson } from './data/colombia-json';
 import { initialData } from './data/seed-data';
 
@@ -29,10 +29,10 @@ export class SeedService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
 
-    @InjectRepository(Departamento)
-    private readonly departamentoRepo: Repository<Departamento>,
-    @InjectRepository(Municipio)
-    private readonly municipioRepo: Repository<Municipio>,
+    @InjectRepository(Department)
+    private readonly departamentRepo: Repository<Department>,
+    @InjectRepository(Municipality)
+    private readonly municipalityRepo: Repository<Municipality>,
 
     @InjectRepository(Brand)
     private readonly brandRepo: Repository<Brand>,
@@ -121,19 +121,19 @@ export class SeedService {
   private async seedColombia() {
     // 1 Poblar los departamentos y municipios relacionados
     for (const { departamento, id, ciudades } of colombiaJson) {
-      const dprtmnto = this.departamentoRepo.create({ name: departamento, id });
+      const dprtmnto = this.departamentRepo.create({ name: departamento, id });
 
-      await this.departamentoRepo.save(dprtmnto);
+      await this.departamentRepo.save(dprtmnto);
 
       // 2. Poblar los municipios de acuerdo a su departamento
 
       for (const municipio of ciudades) {
-        const mncpio = this.municipioRepo.create({
-          departamentoId: id,
+        const mncpio = this.municipalityRepo.create({
+          departmentId: id,
           name: municipio,
         });
 
-        await this.municipioRepo.save(mncpio);
+        await this.municipalityRepo.save(mncpio);
       }
     }
   }
@@ -193,7 +193,9 @@ export class SeedService {
         "suspension_conditions",
         "transmission_conditions",
         "car_cosmetic_inspections",
-        "car_mechanical_inspections"
+        "car_mechanical_inspections",
+        "municipalities",
+        "departments"
         RESTART IDENTITY CASCADE;
         `);
     } catch (error) {

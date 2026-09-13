@@ -7,10 +7,8 @@ import { Car } from '../cars/entities/car.entity';
 import {
   AdjustmentType,
   ChassisDamage,
-  Departamento,
   EngineType,
   InventoryState,
-  Municipio,
   PaintCondition,
   RimsType,
   StructuralCondition,
@@ -19,7 +17,9 @@ import {
   Transmission,
   TransmissionCondition,
 } from '../common/entities/';
+import { Department } from '../departments/entities/department.entity';
 import { Model } from '../models/entities/model.entity';
+import { Municipality } from '../municipalities/entities/municipality.entity';
 import { SeedController } from './seed.controller';
 import { SeedService } from './seed.service';
 
@@ -28,8 +28,8 @@ import { SeedService } from './seed.service';
   providers: [SeedService],
   imports: [
     TypeOrmModule.forFeature([
-      Departamento,
-      Municipio,
+      Department,
+      Municipality,
 
       Car,
       Brand,

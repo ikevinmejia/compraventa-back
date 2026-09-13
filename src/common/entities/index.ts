@@ -1,6 +1,5 @@
 export * from './adjustment-type.entity';
 export * from './chassis-damage.entity';
-export * from './colombia.entity';
 export * from './engine-type.entity';
 export * from './insurance-claim-type.entity';
 export * from './inventory-state.entity';
