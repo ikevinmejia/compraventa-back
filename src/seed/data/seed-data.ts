@@ -45,7 +45,18 @@ export const initialData: seed = {
   chassisDamage: ['Conductor', 'Pasajero', 'Ambas', 'Ninguno'],
   transmissionCondition: ['Buena', 'Desgaste', 'Deslizando', 'Molestando'],
   suspensionCondition: ['Buena', 'Cajoneo', 'Mala'],
-  runtPendingIssues: ['Prenda natural', 'Embargo'],
+  runtPendingIssues: [
+    'Prenda Natural',
+    'Embargo Judicial Civil',
+    'Embargo Judicial Familia',
+    'Embargo Judicial Penal',
+    'Embargo Fiscal Tributario',
+    'Embargo Administrativo',
+    'Embargo Aduanero',
+    'Medida Cautelar',
+    'Compromiso Desintegracion',
+    'Otro',
+  ],
   insuranceClaimType: ['Menor cuantía', 'Mayor cuantía', 'Ninguna'],
   brands: [
     {
