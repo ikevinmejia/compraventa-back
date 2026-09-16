@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { BrandsModule } from './brands/brands.module';
 import { CarCosmeticInspectionModule } from './car-cosmetic-inspection/car-cosmetic-inspection.module';
 import { CarLegalVerificationModule } from './car-legal-verification/car-legal-verification.module';
@@ -35,6 +36,8 @@ import { SeedModule } from './seed/seed.module';
       // Sincronización no se usa en producción
       synchronize: true,
     }),
+
+    AuthModule,
 
     FilesModule,
 

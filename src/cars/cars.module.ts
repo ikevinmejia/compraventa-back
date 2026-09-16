@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from '../auth/auth.module';
 import { Brand } from '../brands/entities/brand.entity';
 import { CarCosmeticInspection } from '../car-cosmetic-inspection/entities/car-cosmetic-inspection.entity';
 import { CarLegalVerification } from '../car-legal-verification/entities/car-legal-verification.entity';
@@ -37,6 +38,7 @@ import { Car } from './entities/car.entity';
       CarImage,
     ]),
     FilesModule,
+    AuthModule,
   ],
   exports: [TypeOrmModule],
 })

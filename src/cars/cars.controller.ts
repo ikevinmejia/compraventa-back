@@ -14,6 +14,8 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { Auth } from '../auth/decorators';
+import { ValidRoles } from '../auth/interfaces';
 import { PaginationDto } from '../common/dtos/pagination.dto';
 import { imageFileFilter } from '../files/helpers/file-filter.helper';
 import { CarsService } from './cars.service';
@@ -26,6 +28,7 @@ export class CarsController {
   constructor(private readonly carsService: CarsService) {}
 
   @Post()
+  @Auth(ValidRoles.admin, ValidRoles.superUser)
   create(@Body() createCarDto: CreateCarDto) {
     return this.carsService.create(createCarDto);
   }
@@ -42,6 +45,7 @@ export class CarsController {
   }
 
   @Patch(':id')
+  @Auth(ValidRoles.admin, ValidRoles.superUser)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCarDto: UpdateCarDto,
@@ -50,6 +54,7 @@ export class CarsController {
   }
 
   @Delete(':id')
+  @Auth(ValidRoles.superUser)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.carsService.remove(id);
   }
@@ -57,6 +62,7 @@ export class CarsController {
   // * Añadir imagenes
 
   @Patch(':carId/images')
+  @Auth(ValidRoles.admin, ValidRoles.superUser)
   @UseInterceptors(
     FilesInterceptor('files', 10, {
       storage: memoryStorage(),
@@ -72,6 +78,7 @@ export class CarsController {
   }
 
   @Patch(':carId/images/:imageId/cover')
+  @Auth(ValidRoles.admin, ValidRoles.superUser)
   async setCover(
     @Param('carId', ParseUUIDPipe) carId: string,
     @Param('imageId', ParseUUIDPipe) imageId: string,

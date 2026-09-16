@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -21,22 +16,21 @@ export class AuthService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    try {
-      const { password, ...userData } = createUserDto;
-      const user = this.userRepository.create(createUserDto);
+    const { password, ...userData } = createUserDto;
 
-      await this.userRepository.save({
-        ...userData,
-        password: bcryptAdapter.hash(password),
-      });
+    const user = this.userRepository.create({
+      ...userData,
+      password: bcryptAdapter.hash(password),
+    });
 
-      return {
-        ...user,
-        token: this.getJwtToken({ id: user.id }),
-      };
-    } catch (error: any) {
-      this.handleDBErrors(error);
-    }
+    await this.userRepository.save(user);
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    return {
+      ...userWithoutPassword,
+      token: this.getJwtToken({ id: user.id }),
+    };
   }
 
   async login(loginUserDto: LoginUserDto) {
@@ -48,11 +42,11 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Email is not valid');
+      throw new UnauthorizedException('Credentials are not valid'); // * Email no valido
     }
 
     if (!bcryptAdapter.compare(password, user.password)) {
-      throw new UnauthorizedException('Password is not valid');
+      throw new UnauthorizedException('Credentials are not valid'); // * Contraseña no valida
     }
 
     // Generar JWT
@@ -79,14 +73,5 @@ export class AuthService {
       ...user,
       token: this.getJwtToken({ id: user.id }),
     };
-  }
-
-  private handleDBErrors(error: any): never {
-    if (error.code === '23505') {
-      throw new BadRequestException(error.detail);
-    }
-    console.log(error);
-
-    throw new InternalServerErrorException('Please check server logs');
   }
 }
