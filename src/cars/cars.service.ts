@@ -1,15 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationDto } from '../common/dtos/pagination.dto';
+import { FilesService } from '../files/files.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
+import { UploadCarImagesDto } from './dto/upload-car-images.dto';
+import { CarImage } from './entities/car-image.entity';
 import { Car } from './entities/car.entity';
+import { resolveCoverImageUrl } from './helpers/resolve-cover-image.helper';
 
 @Injectable()
 export class CarsService {
   constructor(
     @InjectRepository(Car)
     private readonly carRepository: Repository<Car>,
+    @InjectRepository(CarImage)
+    private readonly carImageRepo: Repository<CarImage>,
+
+    private readonly fileService: FilesService,
   ) {}
 
   async create(createCarDto: CreateCarDto) {
@@ -30,8 +43,10 @@ export class CarsService {
     return car;
   }
 
-  async findAll() {
-    const cars = await this.carRepository.find({
+  async findAll(paginationDto: PaginationDto) {
+    const { offset = 1, limit = 20 } = paginationDto;
+
+    const [cars, total] = await this.carRepository.findAndCount({
       relations: {
         brand: true,
         model: true,
@@ -47,9 +62,20 @@ export class CarsService {
           brandId: false,
         },
       },
+      take: limit,
+      skip: (offset - 1) * limit,
+      order: { createdAt: 'DESC' }, // ver nota abajo
     });
 
-    return cars;
+    return {
+      data: cars,
+      meta: {
+        total,
+        page: offset,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: string) {
@@ -57,7 +83,10 @@ export class CarsService {
     if (!car) {
       throw new NotFoundException(`Car with id '${id}' not found.`);
     }
-    return car;
+    return {
+      ...car,
+      coverImageUrl: resolveCoverImageUrl(car),
+    };
   }
 
   async update(id: string, updateCarDto: UpdateCarDto) {
@@ -89,26 +118,71 @@ export class CarsService {
     return { message: 'Car romove' };
   }
 
-  // * Encontrar todos los items eliminados
-  // TODO: endpoint no implementado
-  async findAllIncludingDeleted() {
-    return this.carRepository.find({
-      withDeleted: true,
+  // * actualizar imagenes
+
+  async addImages(
+    carId: string,
+    files: Express.Multer.File[],
+    uploadCarImagesDto: UploadCarImagesDto,
+  ) {
+    const { coverIndex } = uploadCarImagesDto;
+    if (!files?.length) {
+      throw new BadRequestException('At least one image is required');
+    }
+
+    const uploaded = await Promise.all(
+      files.map((file) => this.fileService.uploadImage(file, 'cars')),
+    );
+
+    const hasCover = await this.carImageRepo.exists({
+      where: { carId, isCover: true },
     });
-  }
 
-  // * Restaurar un item eliminado
-  // TODO: endpoint no implementado
-  async restore(id: string) {
-    const result = await this.carRepository.restore(id);
+    // Si hay portada, no se reemplaza
+    // Se reemplaza a menos que desde frontend se indique
 
-    if (result.affected === 0) {
-      throw new NotFoundException(
-        `Car with id ${id} was not found or not was removed`,
+    const resolvedCoverIndex = coverIndex ?? (hasCover ? undefined : 0);
+
+    if (resolvedCoverIndex !== undefined && hasCover) {
+      // Front envía portada nueva, se actualiza
+
+      await this.carImageRepo.update(
+        { carId, isCover: true },
+        { isCover: false },
       );
     }
 
-    return { message: 'Car restore' };
+    const newImages = uploaded.map(({ url, publicId }, index) =>
+      this.carImageRepo.create({
+        carId,
+        url,
+        publicId,
+        isCover: index === resolvedCoverIndex,
+        displayOrder: index,
+      }),
+    );
+
+    await this.carImageRepo.save(newImages);
+
+    return 'Images updated!';
+  }
+
+  async setCoverImage(carId: string, imageId: string) {
+    // Validando que la imagen pertenezca al auto
+    const image = await this.carImageRepo.findOne({
+      where: { id: imageId, carId },
+    });
+
+    if (!image) {
+      throw new NotFoundException(
+        `Image ${imageId} not found for a car ${carId}`,
+      );
+    }
+
+    await this.carImageRepo.update({ carId }, { isCover: false });
+    await this.carImageRepo.update({ id: imageId }, { isCover: true });
+
+    return 'Cover image updated';
   }
 
   private generateSlug(props: {

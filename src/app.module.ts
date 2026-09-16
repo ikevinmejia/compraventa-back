@@ -9,10 +9,11 @@ import { CarLegalVerificationModule } from './car-legal-verification/car-legal-v
 import { CarMechanicalInspectionsModule } from './car-mechanical-inspections/car-mechanical-inspections.module';
 import { CarsModule } from './cars/cars.module';
 import { CommonModule } from './common/common.module';
-import { ModelsModule } from './models/models.module';
-import { SeedModule } from './seed/seed.module';
 import { DepartmentsModule } from './departments/departments.module';
+import { FilesModule } from './files/files.module';
+import { ModelsModule } from './models/models.module';
 import { MunicipalitiesModule } from './municipalities/municipalities.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -34,6 +35,8 @@ import { MunicipalitiesModule } from './municipalities/municipalities.module';
       // Sincronización no se usa en producción
       synchronize: true,
     }),
+
+    FilesModule,
 
     BrandsModule,
     ModelsModule,

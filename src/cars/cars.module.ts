@@ -11,9 +11,11 @@ import {
   Transmission,
   TransmissionCondition,
 } from '../common/entities/';
+import { FilesModule } from '../files/files.module';
 import { Model } from '../models/entities/model.entity';
 import { CarsController } from './cars.controller';
 import { CarsService } from './cars.service';
+import { CarImage } from './entities/car-image.entity';
 import { Car } from './entities/car.entity';
 
 @Module({
@@ -32,7 +34,9 @@ import { Car } from './entities/car.entity';
       SuspensionCondition,
       TransmissionCondition,
       CarLegalVerification,
+      CarImage,
     ]),
+    FilesModule,
   ],
   exports: [TypeOrmModule],
 })

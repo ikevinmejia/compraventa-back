@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -18,6 +19,7 @@ import { EngineType } from '../../common/entities/engine-type.entity';
 import { InventoryState } from '../../common/entities/inventory-state.entity';
 import { Transmission } from '../../common/entities/transmission.entity';
 import { Model } from '../../models/entities/model.entity';
+import { CarImage } from './car-image.entity';
 
 @Entity('cars')
 export class Car {
@@ -97,11 +99,22 @@ export class Car {
   @Column('int', { default: 1 }) // Por default "En peritaje"
   inventoryStateId: number;
 
+  // * Relacion de imagenes
+
+  @OneToMany(() => CarImage, (image) => image.car)
+  images: CarImage[];
+
+  // * Relacion Inspeción cosmetica
+
   @OneToOne(() => CarCosmeticInspection, (inspection) => inspection.car)
   cosmeticInspection: CarCosmeticInspection;
 
+  // * Relacion Inspeción mecanica
+
   @OneToOne(() => CarMechanicalInspection, (inspection) => inspection.car)
   mechanicalInspection: CarMechanicalInspection;
+
+  // * Relacion Inspeción legal
 
   @OneToOne(() => CarLegalVerification, (legal) => legal.car)
   legalVerification: CarLegalVerification;

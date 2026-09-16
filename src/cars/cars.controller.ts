@@ -8,11 +8,18 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { PaginationDto } from '../common/dtos/pagination.dto';
+import { imageFileFilter } from '../files/helpers/file-filter.helper';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
+import { UploadCarImagesDto } from './dto/upload-car-images.dto';
 
 @Controller('cars')
 export class CarsController {
@@ -25,8 +32,8 @@ export class CarsController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll() {
-    return this.carsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.carsService.findAll(paginationDto);
   }
 
   @Get(':id')
@@ -45,5 +52,30 @@ export class CarsController {
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.carsService.remove(id);
+  }
+
+  // * Añadir imagenes
+
+  @Patch(':carId/images')
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      storage: memoryStorage(),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async addImages(
+    @Param('carId', ParseUUIDPipe) carId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() uploadCarImagesDto: UploadCarImagesDto,
+  ) {
+    return this.carsService.addImages(carId, files, uploadCarImagesDto);
+  }
+
+  @Patch(':carId/images/:imageId/cover')
+  async setCover(
+    @Param('carId', ParseUUIDPipe) carId: string,
+    @Param('imageId', ParseUUIDPipe) imageId: string,
+  ) {
+    return this.carsService.setCoverImage(carId, imageId);
   }
 }
