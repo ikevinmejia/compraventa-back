@@ -22,7 +22,13 @@ export class User {
   password: string;
 
   @Column('text', {})
-  fullName: string;
+  name: string;
+
+  @Column('text', {})
+  lastName: string;
+
+  @Column('text', { unique: true })
+  phone: string;
 
   @Column('bool', {
     default: true,
@@ -43,6 +49,8 @@ export class User {
   @BeforeInsert()
   checkFieldsBeforeInsert() {
     this.email = this.email.toLocaleLowerCase().trim();
+    this.name = this.name.toLocaleUpperCase().trim();
+    this.lastName = this.lastName.toLocaleUpperCase().trim();
   }
 
   @BeforeUpdate()

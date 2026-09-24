@@ -7,6 +7,12 @@ import { DbExceptionFilter } from './common/filters';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    igin: 'http://localhost:4200', // URL de tu cliente Angular
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    edentials: true,
+  });
+
   app.setGlobalPrefix('api');
 
   app.useGlobalFilters(new DbExceptionFilter());
@@ -37,7 +43,7 @@ async function bootstrap() {
     // Organizar la documentación de forma alfabetica
     swaggerOptions: {
       tagsSorter: 'alpha',
-      operationsSorter: 'aplha',
+      operationsSorter: 'alpha',
     },
   });
   await app.listen(process.env.PORT ?? 3000);
