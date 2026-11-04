@@ -24,6 +24,7 @@ export class WindowsCheckDto {
 }
 
 export class CreateCarCosmeticInspectionDto {
+  @IsBoolean()
   electricWindowsFunctional: boolean;
 
   @ValidateNested()

@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -7,6 +8,7 @@ import {
 } from 'class-validator';
 
 export class CreateCarMechanicalInspectionDto {
+  @IsBoolean()
   hasEngineLeaks: boolean; // Tiene fugas el motor
 
   @IsOptional()

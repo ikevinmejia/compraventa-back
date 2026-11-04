@@ -79,7 +79,7 @@ export class CarLegalVerification {
     name: 'car_legal_verification_runt_pending_issues', // nombre de la tabla intermedia
     joinColumn: { name: 'carLegalVerificationId', referencedColumnName: 'id' },
     inverseJoinColumn: {
-      name: 'runtPendingIssueId',
+      name: 'runtPendingIssuesId',
       referencedColumnName: 'id',
     },
   })

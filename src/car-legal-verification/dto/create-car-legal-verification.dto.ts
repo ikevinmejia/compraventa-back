@@ -58,7 +58,7 @@ export class CreateCarLegalVerificationDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsInt({ each: true })
-  runtPendingIssueIds?: number[];
+  runtPendingIssuesId?: number[];
 
   @IsBoolean()
   municipalTrafficLightTaxUpToDate: boolean; // Esta al día impuesto municipal - semaforización

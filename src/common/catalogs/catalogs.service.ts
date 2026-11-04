@@ -31,6 +31,7 @@ const CATALOG_MAP = {
   'insurance-claim-types': InsuranceClaimType,
   'runt-pending-issues': RuntPendingIssue,
   'inventory-states': InventoryState,
+  'insurance-claim-type': InsuranceClaimType,
 } as const;
 
 export type CatalogName = keyof typeof CATALOG_MAP;

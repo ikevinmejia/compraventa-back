@@ -7,9 +7,11 @@ import {
   AdjustmentType,
   ChassisDamage,
   EngineType,
+  InsuranceClaimType,
   InventoryState,
   PaintCondition,
   RimsType,
+  RuntPendingIssue,
   StructuralCondition,
   SuspensionCondition,
   TiresCondition,
@@ -60,6 +62,10 @@ export class SeedService {
     private readonly suspensionConditionRepo: Repository<SuspensionCondition>,
     @InjectRepository(TransmissionCondition)
     private readonly transmissionConditionRepo: Repository<TransmissionCondition>,
+    @InjectRepository(InsuranceClaimType)
+    private readonly insuranceClaimTypeRepo: Repository<InsuranceClaimType>,
+    @InjectRepository(RuntPendingIssue)
+    private readonly runtPendingIssueRepo: Repository<RuntPendingIssue>,
   ) {}
 
   async runSeed() {
@@ -115,6 +121,14 @@ export class SeedService {
 
     for (const [index, name] of initialData.transmissionCondition.entries()) {
       await this.transmissionConditionRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.insuranceClaimType.entries()) {
+      await this.insuranceClaimTypeRepo.save({ id: index + 1, name });
+    }
+
+    for (const [index, name] of initialData.runtPendingIssues.entries()) {
+      await this.runtPendingIssueRepo.save({ id: index + 1, name });
     }
   }
 
@@ -194,6 +208,8 @@ export class SeedService {
         "transmission_conditions",
         "car_cosmetic_inspections",
         "car_mechanical_inspections",
+        "runt_pending_issues",
+        "insurance_claim_types",
         "municipalities",
         "departments"
         RESTART IDENTITY CASCADE;
