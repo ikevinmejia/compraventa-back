@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   AdjustmentType,
   ChassisDamage,
+  EngineType,
   InsuranceClaimType,
   InventoryState,
   PaintCondition,
@@ -31,6 +32,7 @@ import { CatalogsService } from './catalogs.service';
       InsuranceClaimType,
       RuntPendingIssue,
       InventoryState,
+      EngineType,
     ]),
     CacheModule.register({
       ttl: 3600 * 1000, // 1 hora, en milisegundos

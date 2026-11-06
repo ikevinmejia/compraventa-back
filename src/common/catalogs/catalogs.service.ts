@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import {
   AdjustmentType,
   ChassisDamage,
+  EngineType,
   InsuranceClaimType,
   InventoryState,
   PaintCondition,
@@ -15,6 +16,7 @@ import {
   StructuralCondition,
   SuspensionCondition,
   TiresCondition,
+  Transmission,
   TransmissionCondition,
 } from '../entities';
 import { CatalogItem } from './interfaces/catalog-item.interface';
@@ -31,7 +33,8 @@ const CATALOG_MAP = {
   'insurance-claim-types': InsuranceClaimType,
   'runt-pending-issues': RuntPendingIssue,
   'inventory-states': InventoryState,
-  'insurance-claim-type': InsuranceClaimType,
+  'engine-types': EngineType,
+  transmissions: Transmission,
 } as const;
 
 export type CatalogName = keyof typeof CATALOG_MAP;
