@@ -58,6 +58,7 @@ export class CarsService {
         plate: true,
         slug: true,
         displacement: true,
+        createdAt: true,
         model: {
           brandId: false,
         },
