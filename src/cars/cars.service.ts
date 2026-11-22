@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { PaginationDto } from '../common/dtos/pagination.dto';
 import { FilesService } from '../files/files.service';
 import { CreateCarDto } from './dto/create-car.dto';
+import { CarListItemDto } from './dto/list-item-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { UploadCarImagesDto } from './dto/upload-car-images.dto';
 import { CarImage } from './entities/car-image.entity';
@@ -30,17 +31,17 @@ export class CarsService {
 
     const slug = this.generateSlug({
       brandName: createCarDto.brandNameHint,
-      modelName: createCarDto.brandNameHint,
+      modelName: createCarDto.modelNameHint,
       plate: createCarDto.plate,
       year: createCarDto.year,
     });
 
-    await this.carRepository.save({
+    const newCar = await this.carRepository.save({
       ...car,
       slug,
     });
 
-    return car;
+    return newCar;
   }
 
   async findAll(paginationDto: PaginationDto) {
@@ -52,15 +53,28 @@ export class CarsService {
         model: true,
         transmissionType: true,
         inventoryState: true,
+        engineType: true,
+        images: true,
       },
       select: {
         id: true,
         plate: true,
         slug: true,
+        year: true,
         displacement: true,
         createdAt: true,
+        engineType: { name: true },
+        transmissionType: {
+          name: true,
+        },
+        inventoryState: {
+          name: true,
+        },
         model: {
-          brandId: false,
+          name: true,
+        },
+        brand: {
+          name: true,
         },
       },
       take: limit,
@@ -69,13 +83,29 @@ export class CarsService {
     });
 
     return {
-      data: cars,
+      data: cars.map((car) => this.toListItem(car)),
       meta: {
         total,
         page: offset,
         limit,
         totalPages: Math.ceil(total / limit),
       },
+    };
+  }
+
+  private toListItem(car: Car): CarListItemDto {
+    return {
+      id: car.id,
+      plate: car.plate,
+      slug: car.slug || '',
+      displacement: car.displacement || 0,
+      engineType: car.engineType.name,
+      year: car.year,
+      brand: car.brand.name,
+      model: car.model.name,
+      transmission: car.transmissionType.name,
+      inventoryState: car.inventoryState.name,
+      coverImageUrl: resolveCoverImageUrl(car),
     };
   }
 
@@ -93,7 +123,7 @@ export class CarsService {
   async update(id: string, updateCarDto: UpdateCarDto) {
     const slug = this.generateSlug({
       brandName: updateCarDto.brandNameHint!,
-      modelName: updateCarDto.brandNameHint!,
+      modelName: updateCarDto.modelNameHint!,
       plate: updateCarDto.plate!,
       year: updateCarDto.year!,
     });
@@ -199,8 +229,8 @@ export class CarsService {
       .trim()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9 -]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-');
+      .replace(/[^a-z0-9 -]/g, '');
+    // .replace(/\s+/g, '-')
+    // .replace(/-+/g, '-');
   }
 }

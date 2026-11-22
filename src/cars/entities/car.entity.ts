@@ -43,6 +43,9 @@ export class Car {
   })
   plate: string;
 
+  @Column('int', { default: 0 }) // precio del vehiculo
+  price: number;
+
   @Column('int')
   year: number;
 
