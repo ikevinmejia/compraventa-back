@@ -16,45 +16,77 @@ export class CarMechanicalInspectionsService {
     carId: string,
     createCarMechanicalInspectionDto: CreateCarMechanicalInspectionDto,
   ) {
-    const carInspection = this.carMechanicalInspRepo.create({
-      ...createCarMechanicalInspectionDto,
-      carId,
+    const existing = await this.carMechanicalInspRepo.findOne({
+      where: { car: { id: carId } },
     });
 
-    await this.carMechanicalInspRepo.save(carInspection);
+    if (existing) {
+      return this.update(carId, createCarMechanicalInspectionDto);
+    }
 
-    return carInspection;
+    const carInspection = this.carMechanicalInspRepo.create({
+      ...createCarMechanicalInspectionDto,
+      car: { id: carId },
+    });
+
+    return await this.carMechanicalInspRepo.save(carInspection);
   }
 
   async findAll() {
-    const carInspections = await this.carMechanicalInspRepo.find({});
-
-    return carInspections;
+    return await this.carMechanicalInspRepo.find({
+      relations: { car: true },
+    });
   }
 
   async findOne(id: string) {
-    const carInpection = await this.carMechanicalInspRepo.findOneBy({ id });
+    const carInspection = await this.carMechanicalInspRepo.findOne({
+      where: [{ id }, { car: { id } }],
+    });
 
-    if (!carInpection) {
+    if (!carInspection) {
       throw new NotFoundException(`Car inspection with id ${id} not found`);
     }
 
-    return carInpection;
+    return carInspection;
   }
-
   async update(
-    id: string,
+    carId: string,
     updateCarMechanicalInspectionDto: UpdateCarMechanicalInspectionDto,
   ) {
-    await this.carMechanicalInspRepo.update(
-      id,
-      updateCarMechanicalInspectionDto,
-    );
+    const existing = await this.carMechanicalInspRepo.findOne({
+      where: { car: { id: carId } },
+    });
 
-    return `car inspection with id ${id} updated`;
+    if (!existing) {
+      const created = this.carMechanicalInspRepo.create({
+        ...updateCarMechanicalInspectionDto,
+        car: { id: carId },
+      });
+      return await this.carMechanicalInspRepo.save(created);
+    }
+
+    const cleanDto = { ...updateCarMechanicalInspectionDto } as Record<
+      string,
+      unknown
+    >;
+    delete cleanDto.id;
+    delete cleanDto.carId;
+    delete cleanDto.car;
+
+    this.carMechanicalInspRepo.merge(existing, cleanDto);
+    return await this.carMechanicalInspRepo.save(existing);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} carMechanicalInspection`;
+  async remove(id: string) {
+    const existing = await this.carMechanicalInspRepo.findOne({
+      where: [{ id }, { car: { id } }],
+    });
+
+    if (!existing) {
+      throw new NotFoundException(`Car inspection with id ${id} not found`);
+    }
+
+    await this.carMechanicalInspRepo.remove(existing);
+    return { message: `car inspection with id ${id} removed` };
   }
 }

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -14,6 +15,7 @@ import {
 
 @Entity('car_mechanical_inspections')
 export class CarMechanicalInspection {
+  @Exclude()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -22,9 +24,6 @@ export class CarMechanicalInspection {
   })
   @JoinColumn({ name: 'carId' })
   car: Car;
-
-  @Column('uuid')
-  carId: string;
 
   @Column('boolean', { default: false })
   hasEngineLeaks: boolean; // Tiene fugas el motor

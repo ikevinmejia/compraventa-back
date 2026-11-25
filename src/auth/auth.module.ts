@@ -22,7 +22,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
           // * Así se hace de forma asincrona con las variables de entorno sin validar su existencia
           // secret: process.env.JWT_SECRET,
           secret: configService.get('JWT_SECRET'),
-          signOptions: { expiresIn: '2h' },
+          signOptions: { expiresIn: '600h' },
+          // signOptions: { expiresIn: '2h' },
         };
       },
     }),

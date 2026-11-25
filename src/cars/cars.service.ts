@@ -110,7 +110,44 @@ export class CarsService {
   }
 
   async findOne(id: string) {
-    const car = await this.carRepository.findOne({ where: { id } });
+    const car = await this.carRepository.findOne({
+      where: { id },
+      relations: {
+        brand: true, // ← falta esto
+        model: true,
+        engineType: true,
+        transmissionType: true,
+        inventoryState: true,
+        cosmeticInspection: true,
+        legalVerification: true,
+        mechanicalInspection: {
+          transmissionCondition: true,
+          suspensionCondition: true,
+        },
+        images: true,
+      },
+      select: {
+        id: true,
+        plate: true,
+        price: true,
+        year: true,
+        displacement: true,
+        slug: true,
+        brand: { id: true, name: true },
+        model: { id: true, name: true },
+        engineType: { id: true, name: true },
+        transmissionType: { id: true, name: true },
+        inventoryState: { id: true, name: true },
+        mechanicalInspection: {
+          id: false,
+          hasEngineLeaks: true,
+          engineLeaksDetail: true,
+          additionalMechanicalObservations: true,
+          transmissionCondition: { id: true, name: true },
+          suspensionCondition: { id: true, name: true },
+        },
+      },
+    });
     if (!car) {
       throw new NotFoundException(`Car with id '${id}' not found.`);
     }
@@ -121,22 +158,23 @@ export class CarsService {
   }
 
   async update(id: string, updateCarDto: UpdateCarDto) {
+    const { brandNameHint, modelNameHint, ...rest } = updateCarDto;
     const slug = this.generateSlug({
-      brandName: updateCarDto.brandNameHint!,
-      modelName: updateCarDto.modelNameHint!,
-      plate: updateCarDto.plate!,
-      year: updateCarDto.year!,
+      brandName: brandNameHint!,
+      modelName: modelNameHint!,
+      plate: rest.plate!,
+      year: rest.year!,
     });
 
     const result = await this.carRepository.update(id, {
-      ...updateCarDto,
+      ...rest,
       slug,
     });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Model with id '${id} doesn't exists'`);
     }
-    return `Car with id #${id} has been updated`;
+    return { message: `Car with id #${id} has been updated` };
   }
 
   async remove(id: string) {
@@ -195,7 +233,7 @@ export class CarsService {
 
     await this.carImageRepo.save(newImages);
 
-    return 'Images updated!';
+    return { message: 'Images updated!' };
   }
 
   async setCoverImage(carId: string, imageId: string) {
@@ -213,7 +251,7 @@ export class CarsService {
     await this.carImageRepo.update({ carId }, { isCover: false });
     await this.carImageRepo.update({ id: imageId }, { isCover: true });
 
-    return 'Cover image updated';
+    return { message: 'Cover image updated' };
   }
 
   private generateSlug(props: {
