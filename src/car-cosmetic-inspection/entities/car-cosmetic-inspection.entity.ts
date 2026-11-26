@@ -26,9 +26,6 @@ export class CarCosmeticInspection {
   @JoinColumn({ name: 'carId' })
   car: Car;
 
-  @Column('uuid')
-  carId: string;
-
   @Column('boolean', { default: false })
   electricWindowsFunctional: boolean;
 
@@ -83,6 +80,7 @@ export class CarCosmeticInspection {
   @Column('int')
   chassisFrontDamageId: number;
 
+  @ManyToOne(() => StructuralCondition)
   @JoinColumn({ name: 'driverDoorPillarId' })
   driverDoorPillar: StructuralCondition;
 
@@ -101,14 +99,14 @@ export class CarCosmeticInspection {
 
   @ManyToOne(() => StructuralCondition)
   @JoinColumn({ name: 'trunkStructureId' })
-  trunkStructure: number; // estructura del maletero
+  trunkStructure: StructuralCondition; // estructura del maletero
 
   @Column('int')
   trunkStructureId: number;
 
   @ManyToOne(() => StructuralCondition)
   @JoinColumn({ name: 'trunkFloorId' })
-  trunkFloor: number; // Estructura del piso del maletero
+  trunkFloor: StructuralCondition; // Estructura del piso del maletero
 
   @Column('int')
   trunkFloorId: number;
