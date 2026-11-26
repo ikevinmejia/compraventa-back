@@ -22,9 +22,6 @@ export class CarLegalVerification {
   @JoinColumn({ name: 'carId' })
   car: Car;
 
-  @Column('uuid')
-  carId: string;
-
   @ManyToOne(() => Department)
   @JoinColumn({ name: 'registrationDepartmentId' })
   registrationDepartment: Department;
@@ -76,7 +73,7 @@ export class CarLegalVerification {
 
   @ManyToMany(() => RuntPendingIssue)
   @JoinTable({
-    name: 'car_legal_verification_runt_pending_issues', // nombre de la tabla intermedia
+    name: 'car_legal_verification_runt_pending_issues',
     joinColumn: { name: 'carLegalVerificationId', referencedColumnName: 'id' },
     inverseJoinColumn: {
       name: 'runtPendingIssuesId',

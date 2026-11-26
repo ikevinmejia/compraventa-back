@@ -18,7 +18,7 @@ export class CarLegalVerificationService {
   ) {
     const infoLegal = this.carLegalRepo.create({
       ...createCarLegalVerificationDto,
-      carId,
+      car: { id: carId },
     });
 
     await this.carLegalRepo.save(infoLegal);
@@ -44,24 +44,36 @@ export class CarLegalVerificationService {
   }
 
   async update(
-    id: string,
+    carId: string,
     updateCarLegalVerificationDto: UpdateCarLegalVerificationDto,
   ) {
-    const result = await this.carLegalRepo.update(
-      id,
-      updateCarLegalVerificationDto,
-    );
+    const existing = await this.carLegalRepo.findOne({
+      where: { car: { id: carId } },
+    });
 
-    if (result.affected === 0) {
-      throw new NotFoundException(
-        `Car legal information with id ${id} not found`,
-      );
+    if (!existing) {
+      const created = this.carLegalRepo.create({
+        ...updateCarLegalVerificationDto,
+        car: { id: carId },
+      });
+
+      return await this.carLegalRepo.save(created);
     }
 
-    return `Car legal information with id ${id} updated`;
+    const cleanDto = { ...updateCarLegalVerificationDto } as Record<
+      string,
+      unknown
+    >;
+
+    delete cleanDto.id;
+    delete cleanDto.carId;
+    delete cleanDto.car;
+
+    this.carLegalRepo.merge(existing, cleanDto);
+    return await this.carLegalRepo.save(existing);
   }
 
   remove(id: string) {
-    return `This action removes a #${id} carLegalVerification`;
+    return { message: `This action removes a #${id} carLegalVerification` };
   }
 }

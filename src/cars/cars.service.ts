@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CarLegalVerification } from '../car-legal-verification/entities/car-legal-verification.entity';
 import { PaginationDto } from '../common/dtos/pagination.dto';
 import { FilesService } from '../files/files.service';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -20,6 +21,8 @@ export class CarsService {
   constructor(
     @InjectRepository(Car)
     private readonly carRepository: Repository<Car>,
+    @InjectRepository(CarLegalVerification)
+    private readonly carLegalRepo: Repository<CarLegalVerification>,
     @InjectRepository(CarImage)
     private readonly carImageRepo: Repository<CarImage>,
 
@@ -130,7 +133,11 @@ export class CarsService {
           trunkStructure: true,
           mirrorsType: true,
         },
-        legalVerification: true,
+        legalVerification: {
+          insuranceClaimType: true,
+          registrationCity: true,
+          registrationDepartment: true,
+        },
         mechanicalInspection: {
           transmissionCondition: true,
           suspensionCondition: true,
@@ -178,10 +185,40 @@ export class CarsService {
           trunkStructure: { id: true, name: true },
           trunkFloor: { id: true, name: true },
         },
+        legalVerification: {
+          id: true,
+          hadPublicServiceUse: true,
+          hasInsuranceClaims: true,
+          hasTrafficFines: true,
+          insuranceClaimType: { id: true, name: true },
+          municipalTrafficLightTaxUpToDate: true,
+          registrationCity: { id: true, name: true },
+          registrationDepartment: { id: true, name: true },
+          runtHasLiens: true,
+          runtMatchesLicense: true,
+          soatExpirationDate: true,
+          taxesOwedYears: true,
+          taxesUpToDate: true,
+          technicalInspectionExpirationDate: true,
+          trafficFinesCount: true,
+          trafficFinesTotalAmount: true,
+        },
       },
     });
     if (!car) {
       throw new NotFoundException(`Car with id '${id}' not found.`);
+    }
+
+    if (car.legalVerification) {
+      const legal = await this.carLegalRepo.findOne({
+        where: { id: car.legalVerification.id },
+        relations: { runtPendingIssues: true },
+        select: {
+          id: true,
+          runtPendingIssues: { id: true, name: true },
+        },
+      });
+      car.legalVerification.runtPendingIssues = legal?.runtPendingIssues ?? [];
     }
     return {
       ...car,

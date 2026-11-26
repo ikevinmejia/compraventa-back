@@ -10,7 +10,14 @@ import {
   IsPositive,
   Min,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
+
+export class RuntPendingIssueIdDto {
+  @IsInt()
+  @IsPositive()
+  id: number;
+}
 
 export class CreateCarLegalVerificationDto {
   @IsPositive()
@@ -57,8 +64,9 @@ export class CreateCarLegalVerificationDto {
   @ValidateIf((dto: CreateCarLegalVerificationDto) => dto.runtHasLiens === true)
   @IsArray()
   @ArrayNotEmpty()
-  @IsInt({ each: true })
-  runtPendingIssuesId?: number[];
+  @ValidateNested({ each: true })
+  @Type(() => RuntPendingIssueIdDto)
+  runtPendingIssues?: RuntPendingIssueIdDto[];
 
   @IsBoolean()
   municipalTrafficLightTaxUpToDate: boolean; // Esta al día impuesto municipal - semaforización
