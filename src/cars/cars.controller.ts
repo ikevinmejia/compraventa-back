@@ -16,12 +16,15 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { Auth } from '../auth/decorators';
 import { ValidRoles } from '../auth/interfaces';
-import { PaginationDto } from '../common/dtos/pagination.dto';
+import { FindCarsQueryDto } from '../common/dtos/filters.dto';
 import { imageFileFilter } from '../files/helpers/file-filter.helper';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
-import { UploadCarImagesDto } from './dto/upload-car-images.dto';
+import {
+  ReorderCarImagesDto,
+  UploadCarImagesDto,
+} from './dto/upload-car-images.dto';
 
 @Controller('cars')
 export class CarsController {
@@ -35,8 +38,8 @@ export class CarsController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.carsService.findAll(paginationDto);
+  findAll(@Query() query: FindCarsQueryDto) {
+    return this.carsService.findAll(query);
   }
 
   @Get(':id')
@@ -84,5 +87,25 @@ export class CarsController {
     @Param('imageId', ParseUUIDPipe) imageId: string,
   ) {
     return this.carsService.setCoverImage(carId, imageId);
+  }
+
+  @Patch(':carId/images/order')
+  @Auth(ValidRoles.admin, ValidRoles.superUser)
+  async reorderImages(
+    @Param('carId', ParseUUIDPipe) carId: string,
+    @Body() updateCarImagesDto: ReorderCarImagesDto,
+  ) {
+    return this.carsService.reorderImages(carId, updateCarImagesDto);
+  }
+
+  // * Eliminar imagen
+
+  @Delete(':carId/images')
+  @Auth(ValidRoles.admin, ValidRoles.superUser)
+  async deleteImages(
+    @Param('carId', ParseUUIDPipe) carId: string,
+    @Query('imgPublicId') imgPublicId: string,
+  ) {
+    return this.carsService.deleteImage(carId, imgPublicId);
   }
 }

@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import {
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsUUID,
+  Min,
+} from 'class-validator';
 
 export class UploadCarImagesDto {
   @IsOptional()
@@ -7,4 +15,12 @@ export class UploadCarImagesDto {
   @IsInt()
   @Min(0)
   coverIndex?: number;
+}
+
+export class ReorderCarImagesDto {
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayUnique()
+  @IsUUID('all', { each: true })
+  imageIds!: string[];
 }

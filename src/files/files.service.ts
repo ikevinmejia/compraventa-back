@@ -8,7 +8,7 @@ import {
 @Injectable()
 export class FilesService {
   constructor(
-    @Inject('CLOUDINARY') private readonly cloudinaryConfig: typeof cloudinary,
+    @Inject('CLOUDINARY') private readonly cloudinaryClient: typeof cloudinary,
   ) {}
 
   async uploadImage(
@@ -21,7 +21,7 @@ export class FilesService {
     }
 
     return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
+      const uploadStream = this.cloudinaryClient.uploader.upload_stream(
         { folder: `compraventa/${folder}` },
         (
           error: UploadApiErrorResponse | undefined,
@@ -39,5 +39,31 @@ export class FilesService {
 
       uploadStream.end(file.buffer);
     });
+  }
+  async deleteImage(publicId: string): Promise<void> {
+    if (!publicId) {
+      throw new BadRequestException('Public ID is required');
+    }
+
+    try {
+      const result = (await this.cloudinaryClient.uploader.destroy(publicId, {
+        invalidate: true, // Limpia la caché del CDN para que deje de verse de inmediato
+      })) as { result: string };
+
+      if (result.result !== 'ok' && result.result !== 'not found') {
+        throw new BadRequestException(`Error deleting image: ${result.result}`);
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Error deleting image from Cloudinary';
+
+      throw new BadRequestException(errorMessage);
+    }
   }
 }

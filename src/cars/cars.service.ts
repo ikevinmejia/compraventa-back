@@ -1,17 +1,23 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
+import { SelectQueryBuilder } from 'typeorm/browser';
 import { CarLegalVerification } from '../car-legal-verification/entities/car-legal-verification.entity';
-import { PaginationDto } from '../common/dtos/pagination.dto';
+import { FindCarsQueryDto } from '../common/dtos/filters.dto';
 import { FilesService } from '../files/files.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { CarListItemDto } from './dto/list-item-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
-import { UploadCarImagesDto } from './dto/upload-car-images.dto';
+import {
+  ReorderCarImagesDto,
+  UploadCarImagesDto,
+} from './dto/upload-car-images.dto';
 import { CarImage } from './entities/car-image.entity';
 import { Car } from './entities/car.entity';
 import { resolveCoverImageUrl } from './helpers/resolve-cover-image.helper';
@@ -47,43 +53,64 @@ export class CarsService {
     return newCar;
   }
 
-  async findAll(paginationDto: PaginationDto) {
-    const { offset = 1, limit = 20 } = paginationDto;
+  async findAll(query: FindCarsQueryDto) {
+    const {
+      offset = 1,
+      limit = 20,
+      search,
+      brandId,
+      modelId,
+      engineTypeId,
+      transmissionId,
+      entryDate,
+    } = query;
 
-    const [cars, total] = await this.carRepository.findAndCount({
-      relations: {
-        brand: true,
-        model: true,
-        transmissionType: true,
-        inventoryState: true,
-        engineType: true,
-        images: true,
-      },
-      select: {
-        id: true,
-        plate: true,
-        slug: true,
-        year: true,
-        displacement: true,
-        createdAt: true,
-        engineType: { name: true },
-        transmissionType: {
-          name: true,
-        },
-        inventoryState: {
-          name: true,
-        },
-        model: {
-          name: true,
-        },
-        brand: {
-          name: true,
-        },
-      },
-      take: limit,
-      skip: (offset - 1) * limit,
-      order: { createdAt: 'DESC' }, // ver nota abajo
+    const qb = this.carRepository
+      .createQueryBuilder('car')
+      .leftJoin('car.brand', 'brand')
+      .leftJoin('car.model', 'model')
+      .leftJoin('car.engineType', 'engineType')
+      .leftJoin('car.transmissionType', 'transmissionType')
+      .leftJoin('car.inventoryState', 'inventoryState')
+      .leftJoin('car.images', 'images')
+      .select([
+        'car.id',
+        'car.plate',
+        'car.slug',
+        'car.year',
+        'car.displacement',
+        'car.createdAt',
+        'brand.id',
+        'brand.name',
+        'model.id',
+        'model.name',
+        'engineType.id',
+        'engineType.name',
+        'transmissionType.id',
+        'transmissionType.name',
+        'inventoryState.id',
+        'inventoryState.name',
+        'images.id',
+        'images.url',
+        'images.isCover',
+        'images.displayOrder',
+      ]);
+
+    this.applyFilters(qb, {
+      search,
+      brandId,
+      modelId,
+      engineTypeId,
+      transmissionId,
+      entryDate,
     });
+
+    const [cars, total] = await qb
+      .orderBy('car.createdAt', 'DESC')
+      .addOrderBy('car.id', 'ASC') // desempate para que la paginación sea estable
+      .take(limit)
+      .skip((offset - 1) * limit)
+      .getManyAndCount();
 
     return {
       data: cars.map((car) => this.toListItem(car)),
@@ -94,6 +121,51 @@ export class CarsService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  private applyFilters(
+    qb: SelectQueryBuilder<Car>,
+    {
+      search,
+      brandId,
+      modelId,
+      engineTypeId,
+      transmissionId,
+      entryDate,
+    }: Omit<FindCarsQueryDto, 'limit' | 'offset'>,
+  ) {
+    if (search) {
+      // Escapa % y _ para que el usuario no los use como comodines
+      const term = `%${search.replace(/[\\%_]/g, '\\$&')}%`;
+      qb.andWhere(
+        new Brackets((w) => {
+          w.where('car.plate ILIKE :term')
+            .orWhere('brand.name ILIKE :term')
+            .orWhere('model.name ILIKE :term');
+        }),
+        { term },
+      );
+    }
+
+    if (brandId) qb.andWhere('car.brandId = :brandId', { brandId });
+    if (modelId) qb.andWhere('car.modelId = :modelId', { modelId });
+    if (engineTypeId) {
+      qb.andWhere('car.engineTypeId = :engineTypeId', { engineTypeId });
+    }
+
+    if (transmissionId) {
+      qb.andWhere('car.transmissionId = :transmissionId', { transmissionId });
+    }
+
+    if (entryDate) {
+      // Rango del día completo en hora de Colombia (UTC-5, sin horario de verano)
+      const start = new Date(`${entryDate}T00:00:00-05:00`);
+      const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+      qb.andWhere('car.createdAt >= :start AND car.createdAt < :end', {
+        start,
+        end,
+      });
+    }
   }
 
   private toListItem(car: Car): CarListItemDto {
@@ -321,6 +393,58 @@ export class CarsService {
     await this.carImageRepo.update({ id: imageId }, { isCover: true });
 
     return { message: 'Cover image updated' };
+  }
+
+  async reorderImages(carId: string, dto: ReorderCarImagesDto) {
+    try {
+      for (const [displayOrder, id] of dto.imageIds.entries()) {
+        await this.carImageRepo.update({ id, carId }, { displayOrder });
+      }
+
+      return { message: 'Image order updated' };
+    } catch (error) {
+      throw new BadRequestException(
+        error instanceof Error ? error.message : 'Unknown error',
+      );
+    }
+  }
+
+  async deleteImage(
+    carId: string,
+    imgPublicId: string,
+  ): Promise<{ message: string }> {
+    // 1. Verificar primero si la imagen pertenece a ese carro en la BD
+    const image = await this.carImageRepo.findOne({
+      where: { publicId: imgPublicId, carId },
+    });
+
+    if (!image) {
+      throw new NotFoundException(
+        'Image not found or does not belong to this car',
+      );
+    }
+
+    try {
+      // 2. Eliminar de Cloudinary (si falla, lanza BadRequestException y no borra de la BD)
+      await this.fileService.deleteImage(imgPublicId);
+
+      // 3. Eliminar el registro de la base de datos
+      await this.carImageRepo.remove(image);
+
+      return { message: 'Image deleted successfully' };
+    } catch (error) {
+      // Si ya es una excepción HTTP de NestJS (como BadRequestException), la relanzamos tal cual
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      // Para errores inesperados de base de datos o red
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Unexpected error deleting image';
+      throw new InternalServerErrorException(errorMessage);
+    }
   }
 
   private generateSlug(props: {

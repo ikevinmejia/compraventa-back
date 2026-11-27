@@ -31,6 +31,28 @@
 $ yarn install
 ```
 
+### Cloudinary image uploads
+
+Set these variables in your local `.env` using the values from **Cloudinary
+Console → Dashboard → Product environment credentials**:
+
+```env
+CLOUDINARY_CLOUD_NAME=your_actual_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+`CLOUDINARY_CLOUD_NAME` is the Cloudinary account's cloud name, not the
+application or database name. The API key and secret must come from the same
+Cloudinary environment. Do not commit `.env` or expose the API secret to the
+frontend.
+
+Uploads can be made directly with `POST /api/files/cars` using multipart
+form-data with a `file` field. Cars can also be updated through
+`PATCH /api/cars/:carId/images` using multipart form-data with one or more
+`files` fields; the cars service uploads those files to the `compraventa/cars`
+folder and stores the returned URLs and public IDs.
+
 ## Compile and run the project
 
 ```bash
